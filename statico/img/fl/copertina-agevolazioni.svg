@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 480" width="1200" height="480" preserveAspectRatio="xMidYMid slice">
+  <!-- Agevolazioni: gradini che salgono, una freccia e le monete del contributo -->
+  <defs>
+    <pattern id="tratti" width="28" height="28" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <path d="M0 0V28" stroke="#8A5A00" stroke-opacity=".09" stroke-width="6"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="480" fill="#F8EEDB"/>
+  <rect width="1200" height="480" fill="url(#tratti)"/>
+  <rect x="260" y="350" width="110" height="60" rx="8" fill="#E0A93B"/>
+  <rect x="380" y="300" width="110" height="110" rx="8" fill="#E0A93B"/>
+  <rect x="500" y="250" width="110" height="160" rx="8" fill="#E0A93B"/>
+  <rect x="620" y="200" width="110" height="210" rx="8" fill="#8A5A00"/>
+  <path d="M220 410H1000" stroke="#8A5A00" stroke-width="5" stroke-linecap="round"/>
+  <path d="M290 250Q520 230 740 90" fill="none" stroke="#8A5A00" stroke-width="14" stroke-linecap="round"/>
+  <path d="M767 73L751 107L729 73Z" fill="#8A5A00" stroke="#8A5A00" stroke-width="6" stroke-linejoin="round"/>
+  <circle cx="900" cy="330" r="64" fill="#E0A93B" stroke="#8A5A00" stroke-width="8"/>
+  <circle cx="900" cy="330" r="36" fill="none" stroke="#8A5A00" stroke-width="4"/>
+  <circle cx="968" cy="222" r="50" fill="#FFFFFF" stroke="#8A5A00" stroke-width="8"/>
+  <circle cx="968" cy="222" r="26" fill="none" stroke="#E0A93B" stroke-width="4"/>
+</svg>

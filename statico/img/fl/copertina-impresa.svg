@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 480" width="1200" height="480" preserveAspectRatio="xMidYMid slice">
+  <!-- Impresa e società: i soci (cerchi che si sovrappongono) e i blocchi del capitale -->
+  <defs>
+    <pattern id="punti" width="40" height="40" patternUnits="userSpaceOnUse">
+      <circle cx="20" cy="20" r="2" fill="#34489A" fill-opacity=".2"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="480" fill="#E9ECF7"/>
+  <rect width="1200" height="480" fill="url(#punti)"/>
+  <circle cx="440" cy="290" r="120" fill="#34489A"/>
+  <circle cx="570" cy="290" r="120" fill="#8D9BD6" fill-opacity=".85"/>
+  <circle cx="505" cy="180" r="120" fill="#FFFFFF" fill-opacity=".55" stroke="#34489A" stroke-width="5"/>
+  <g stroke="#34489A" stroke-width="5">
+    <rect x="776" y="296" width="112" height="112" rx="10" fill="#34489A"/>
+    <rect x="900" y="296" width="112" height="112" rx="10" fill="#FFFFFF"/>
+    <rect x="838" y="172" width="112" height="112" rx="10" fill="#8D9BD6"/>
+  </g>
+  <path d="M120 408H1080" stroke="#34489A" stroke-width="5" stroke-linecap="round"/>
+</svg>

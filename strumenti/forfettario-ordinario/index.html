@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+<html lang="it" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forfettario o ordinario | Andrea Rizzo, Commercialista ad Asti</title>
+    <link href="../../statico/vendor/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../statico/vendor/bootstrap-icons/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4895ef;
+            --light-bg: #f8f9fa;
+            --dark-bg: #212529;
+        }
+        
+        body {
+            background-color: var(--light-bg);
+            transition: background-color 0.3s ease;
+        }
+        
+        body.dark-mode {
+            background-color: var(--dark-bg);
+            color: #f8f9fa;
+        }
+        
+        .card {
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            font-weight: 600;
+            padding: 1rem 1.5rem;
+        }
+        
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            border-radius: 8px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 500;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            transform: translateY(-2px);
+        }
+        
+        .result-card {
+            background-color: rgba(67, 97, 238, 0.05);
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .theme-switch {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        
+        .summary-card {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border: 1px solid rgba(0,0,0,0.125);
+        }
+        
+        .dark-mode .summary-card {
+            background: linear-gradient(135deg, #2d3748, #4a5568);
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .card {
+                margin-bottom: 1rem;
+            }
+        }
+        
+        .calculating {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        
+        .info-tooltip {
+            cursor: pointer;
+            color: var(--accent-color);
+        }
+    </style>
+<link rel="canonical" href="https://www.andrearizzo.it/strumenti/forfettario-ordinario/">
+<meta name="description" content="Confronto tra regime forfettario e IRPEF ordinaria sugli stessi ricavi. Calcolatore gratuito di Andrea Rizzo, Dottore Commercialista ad Asti.">
+</head>
+<body>
+<div style="font-family:system-ui,-apple-system,'Segoe UI',sans-serif;background:#17202A;color:#E8ECE8;padding:10px 16px;font-size:14px;line-height:1.4;display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center;justify-content:space-between">
+  <a href="/" style="color:#fff;font-weight:700;text-decoration:none">Andrea Rizzo, Dottore Commercialista</a>
+  <span>Risultato indicativo, non è una consulenza. <a href="/strumenti/" style="color:#fff">Altri strumenti</a> · <a href="/#contatti" style="color:#fff">Contatta lo studio</a></span>
+</div>
+    <div class="container-fluid py-4">
+        <header class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h2 mb-0"><i class="bi bi-calculator-fill me-2"></i>Calcolatore Imposte Plus</h1>
+            <div class="d-flex align-items-center">
+                <button id="resetBtn" class="btn btn-outline-secondary me-2">
+                    <i class="bi bi-arrow-clockwise me-1"></i>Azzera
+                </button>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="darkModeSwitch">
+                    <label class="form-check-label" for="darkModeSwitch">Modalità scura</label>
+                </div>
+            </div>
+        </header>
+        
+        <div class="alert alert-info d-flex align-items-center" role="alert">
+            <i class="bi bi-info-circle-fill me-2"></i>
+            <div>Questo calcolatore ti aiuta a stimare le imposte per i regimi forfettario e ordinario. I risultati sono indicativi e non costituiscono parere fiscale. Anno d'imposta 2026; addizionali della Regione Piemonte e del Comune di Asti.</div>
+        </div>
+        
+        
+        <div class="row">
+            <!-- Regime Forfettario -->
+            <div class="col-lg-6 mb-4">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="h5 mb-0">Calcolo Regime Forfettario</h2>
+                            </div>
+                            <div class="card-body">
+                                <form id="forfettarioForm">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Settore Attività <i class="bi bi-info-circle info-tooltip" data-bs-toggle="tooltip" title="Seleziona il settore della tua attività per determinare il coefficiente di redditività"></i></label>
+                                            <select class="form-select" id="coefficienteForfettario">
+                                                <option value="0.40">Industrie alimentari e delle bevande (40%)</option>
+                                                <option value="0.40">Commercio all'ingrosso e al dettaglio (40%)</option>
+                                                <option value="0.40">Commercio ambulante di prodotti alimentari e bevande (40%)</option>
+                                                <option value="0.54">Commercio ambulante di altri prodotti (54%)</option>
+                                                <option value="0.86">Costruzioni e attività immobiliari (86%)</option>
+                                                <option value="0.62">Intermediari del commercio (62%)</option>
+                                                <option value="0.40">Attività dei servizi di alloggio e di ristorazione (40%)</option>
+                                                <option value="0.78" selected>Attività professionali (78%)</option>
+                                                <option value="0.67">Altre attività economiche (67%)</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Aliquota Imposta <i class="bi bi-info-circle info-tooltip" data-bs-toggle="tooltip" title="L'aliquota del 5% si applica nei primi 5 anni di attività, se ci sono i requisiti"></i></label>
+                                            <select class="form-select" id="aliquotaForfettaria">
+                                                <option value="0.05">5% (primi 5 anni di attività, se ci sono i requisiti)</option>
+                                                <option value="0.15" selected>15% (aliquota ordinaria del forfettario)</option>
+                                            </select>
+                                        </div>
+
+                                        
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Fatturato Annuo <i class="bi bi-info-circle info-tooltip" data-bs-toggle="tooltip" title="Ricavi/compensi incassati nell'anno (criterio di cassa)"></i></label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="fatturato" placeholder="0,00" min="0" step="100">
+                                            <span class="input-group-text">€</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+
+                                        <div class="col-md-6 mb-3">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label">Costi <i class="bi bi-info-circle info-tooltip" data-bs-toggle="tooltip" title="Costi dell'attività (non deducibili nel regime forfettario, solo a scopo informativo)"></i></label>
+                                                <div class="input-group">
+                                                    <input type="number" class="form-control" id="costiForfettario" placeholder="0,00" min="0" step="100">
+                                                    <span class="input-group-text">€</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">IVA acquisti sui costi <i class="bi bi-info-circle info-tooltip" data-bs-toggle="tooltip" title="IVA pagata sugli acquisti: nel regime forfettario è indetraibile e diventa un costo, mentre nel regime ordinario è detraibile"></i></label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control" id="ivaAcquistiForfettario" placeholder="0,00" min="0" step="100">
+                                                <span class="input-group-text">€</span>
+                                            </div>
+                                        </div>
+
+                                        
+
+                                        
+                                    </div>
+
+                                    <div class="row">
+
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Tipo Contribuente INPS <i class="bi bi-info-circle info-tooltip" data-bs-toggle="tooltip" title="Seleziona la tua gestione previdenziale"></i></label>
+                                            <select class="form-select" id="tipoContribuenteInps">
+                                                <option value="gestione_separata" selected>Gestione separata INPS (professionisti senza cassa)</option>
+                                                <option value="artigiano">Artigiano</option>
+                                                <option value="commerciante">Commerciante</option>
+                                                <option value="nessuno">Nessuno (cassa professionale propria o altro)</option>
+                                            </select>
+                                        </div>
+
+                                        
+
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Contributi Previdenziali Aggiuntivi <i class="bi bi-info-circle info-tooltip" data-bs-toggle="tooltip" title="Contributi volontari o versati ad altre casse previdenziali"></i></label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control" id="contributiForfettarioAggiuntivi" placeholder="0,00" min="0" step="10">
+                                                <span class="input-group-text">€</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-12 mb-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="scontoContributi35">
+                                                <label class="form-check-label" for="scontoContributi35">Riduzione 35% dei contributi INPS <i class="bi bi-info-circle info-tooltip" data-bs-toggle="tooltip" title="Riduzione del 35% dei contributi IVS per artigiani e commercianti in regime forfettario, su domanda all'INPS (art. 1, c. 77-84, L. 190/2014). Non spetta in gestione separata; non cumulabile con la riduzione del 50% per i nuovi iscritti 2025 (L. 207/2024)."></i></label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Altri redditi soggetti a IRPEF <i class="bi bi-info-circle info-tooltip" data-bs-toggle="tooltip" title="Altri redditi da sommare (es. lavoro dipendente, pensione, rendite) per il calcolo del reddito complessivo"></i></label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="altriRedditiForfettario" placeholder="0,00" min="0" step="100">
+                                            <span class="input-group-text">€</span>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-12">
+                        <div class="card result-card">
+                            <div class="card-header">
+                                <h3 class="h5 mb-0">Risultati Forfettario</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Reddito Lordo:</span>
+                                    <strong id="redditoLordoForfettario">0,00 €</strong>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Costi figurativi (forfetari):</span>
+                                    <strong id="costiFigurativiForfettario">0,00 €</strong>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Contributi INPS fissi (sul minimale):</span>
+                                    <strong id="contributiInpsMinimi">0,00 €</strong>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Contributi INPS a percentuale:</span>
+                                    <strong id="contributiInpsEccedenti">0,00 €</strong>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2 text-success d-none" id="rigaSconto35">
+                                    <span>Riduzione 35% applicata:</span>
+                                    <strong id="sconto35Valore">0,00 €</strong>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Altri Contributi:</span>
+                                    <strong id="contributiDedottiForfettario">0,00 €</strong>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Reddito Imponibile:</span>
+                                    <strong id="redditoForfettario">0,00 €</strong>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Imposta da versare:</span>
+                                    <strong id="impostaForfettaria" class="text-primary">0,00 €</strong>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>IRPEF + addizionali sugli altri redditi:</span>
+                                    <strong id="imposteAltriRedditiForfettario">0,00 €</strong>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Totale contributi:</span>
+                                    <strong id="totaleContributiForfettario">0,00 €</strong>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Costi (non deducibili):</span>
+                                    <strong id="costiForfettarioDisplay">0,00 €</strong>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>IVA acquisti (indetraibile):</span>
+                                    <strong id="ivaAcquistiForfettarioDisplay">0,00 €</strong>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Netto annuo:</span>
+                                    <strong id="nettoAnnuoForfettario" class="text-success">0,00 €</strong>
+                                </div>
+                                <small class="text-muted d-block">Fatturato − costi − IVA acquisti − contributi − imposte (+ altri redditi)</small>
+                                <div id="avvisiForfettario" class="mt-3"></div>
+                                <div class="alert alert-secondary small mt-2 mb-0">Non può applicare il forfettario chi nell'anno precedente ha avuto redditi di lavoro dipendente o assimilati oltre 35.000 € (art. 1, c. 57, lett. d-ter, L. 190/2014).</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Regime Ordinario IRPEF -->
+            <div class="col-lg-6 mb-4">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="h5 mb-0">Calcolo regime IRPEF</h2>
+                            </div>
+                            <div class="card-body">
+                                <form id="irpefForm">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+
+                                            <label class="form-label">Tipologia di Reddito <i class="bi bi-info-circle info-tooltip" data-bs-toggle="tooltip" title="Seleziona la tipologia di reddito per un calcolo più preciso delle detrazioni"></i></label>
+                                            <select class="form-select" id="tipoReddito">
+                                                <option value="dipendente">Lavoro Dipendente</option>
+                                                <option value="pensione">Pensione</option>
+                                                <option value="autonomo" selected>Lavoro Autonomo</option>
+                                            </select>
+
+                                        </div>
+
+                                        <div class="col-md-6 mb-3 d-flex align-items-end" id="tempoDeterminatoGroup">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="tempoDeterminato">
+                                                <label class="form-check-label" for="tempoDeterminato">Contratto a tempo determinato</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Fatturato Annuo <i class="bi bi-info-circle info-tooltip" data-bs-toggle="tooltip" title="Uguale al fatturato del regime forfettario per confrontare la stessa attività"></i></label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control" id="fatturatoIrpef" placeholder="0,00" min="0" step="100">
+                                                <span class="input-group-text">€</span>
+                                            </div>
+                                            <small class="text-muted">Sincronizzato con il regime forfettario</small>
+                                        </div>
+
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Costi <i class="bi bi-info-circle info-tooltip" data-bs-toggle="tooltip" title="Costi deducibili (spese per l'attività). Reddito = Ricavi - Costi"></i></label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control" id="costiIrpef" placeholder="0,00" min="0" step="100">
+                                                <span class="input-group-text">€</span>
+                                            </div>
+                                            <small class="text-muted">Reddito = Fatturato − Costi</small>
+                                        </div>
+
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Tipo Contribuente INPS <i class="bi bi-info-circle info-tooltip" data-bs-toggle="tooltip" title="Seleziona la gestione previdenziale per il calcolo contributi (deducibili)"></i></label>
+                                            <select class="form-select" id="tipoContribuenteInpsIrpef">
+                                                <option value="gestione_separata" selected>Gestione separata INPS (professionisti senza cassa)</option>
+                                                <option value="artigiano">Artigiano</option>
+                                                <option value="commerciante">Commerciante</option>
+                                                <option value="nessuno">Nessuno (cassa professionale propria o altro)</option>
+                                            </select>
+                                        </div>
+
+                                            
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Contributi previdenziali aggiuntivi <i class="bi bi-info-circle info-tooltip" data-bs-toggle="tooltip" title="Contributi volontari o versati ad altre forme di previdenza che si sommano ai contributi INPS"></i></label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control" id="contributiIrpefAggiuntivi" placeholder="0,00" min="0" step="10">
+                                                <span class="input-group-text">€</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Detrazioni personali <i class="bi bi-info-circle info-tooltip" data-bs-toggle="tooltip" title="Altre detrazioni da sommare (es. carichi familiari)"></i></label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control" id="detrazioniPersonali" placeholder="0,00" min="0" step="10">
+                                                <span class="input-group-text">€</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Oneri detraibili (19%) <i class="bi bi-info-circle info-tooltip" data-bs-toggle="tooltip" title="Spese detraibili al 19% (es. spese sanitarie, interessi mutuo, assicurazioni vita)"></i></label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control" id="oneriDetraibili" placeholder="0,00" min="0" step="10">
+                                                <span class="input-group-text">€</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Oneri Deducibili <i class="bi bi-info-circle info-tooltip" data-bs-toggle="tooltip" title="Altre spese deducibili oltre ai contributi INPS"></i></label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control" id="oneriDeducibili" placeholder="0,00" min="0" step="10">
+                                                <span class="input-group-text">€</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Altri redditi soggetti a IRPEF <i class="bi bi-info-circle info-tooltip" data-bs-toggle="tooltip" title="Es. lavoro dipendente, pensione, rendite"></i></label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control" id="altriRedditiIrpef" placeholder="0,00" min="0" step="100">
+                                                <span class="input-group-text">€</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-12">
+                        <div class="card result-card">
+                            <div class="card-header">
+                                <h3 class="h5 mb-0">Risultati IRPEF</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Reddito complessivo:</span>
+                                    <strong id="redditoComplessivoIrpef">0,00 €</strong>
+                                </div>
+                                <small class="text-muted d-block mb-2">(Ricavi − Costi) + Altri redditi</small>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Contributi INPS:</span>
+                                    <strong id="contributiInpsIrpef">0,00 €</strong>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Reddito Imponibile:</span>
+                                    <strong id="redditoImponibileIrpef">0,00 €</strong>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>IRPEF Lorda:</span>
+                                    <strong id="irpefLorda">0,00 €</strong>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Detrazioni IRPEF per tipo reddito:</span>
+                                    <strong id="detrazioniTipoRedditoIrpef">0,00 €</strong>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Ulteriore detrazione lavoro dipendente (L. 207/2024):</span>
+                                    <strong id="ulterioreDetrazioneIrpef">0,00 €</strong>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Detrazioni totali:</span>
+                                    <strong id="detrazioni">0,00 €</strong>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>IRPEF Netta:</span>
+                                    <strong id="irpefNetta" class="text-primary">0,00 €</strong>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Addiz. regionale (Piemonte):</span>
+                                    <strong id="addizionaleRegionale">0,00 €</strong>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Addizionale comunale (Comune di Asti):</span>
+                                    <strong id="addizionaleComunale">0,00 €</strong>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Imposte totali:</span>
+                                    <strong id="imposteTotaliIrpef">0,00 €</strong>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span><strong>Totale (tasse + contributi):</strong></span>
+                                    <strong id="totaleTasseContributiIrpef" class="text-primary">0,00 €</strong>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Aliquota media:</span>
+                                    <strong id="aliquotaMediaIrpef">0,00%</strong>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>Netto annuo:</span>
+                                    <strong id="nettoAnnuoIrpef" class="text-success">0,00 €</strong>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <h3 class="h5 mb-0">Reddito per le detrazioni (regime ordinario)</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <span>Reddito complessivo ordinario:</span>
+                                    <strong id="redditoTotaleAgevolazioni">0,00 €</strong>
+                                </div>
+                                <small class="text-muted">Reddito su cui si calcolano le detrazioni del regime ordinario: (fatturato − costi) + altri redditi, contati una sola volta</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Confronto -->
+        <div class="row mt-2">
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card text-center">
+                            <div class="card-header bg-primary text-white">
+                                <h3 class="h5 mb-0">Regime Forfettario</h3>
+                            </div>
+                            <div class="card-body">
+                                <h2 id="forfettarioTasseComparison" class="text-primary">0,00 €</h2>
+                                <p class="text-muted mb-2">Totale (imposte + contributi + IVA acquisti)</p>
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span>Imposta sostitutiva:</span>
+                                    <strong id="forfettarioImpostaComparison">0,00 €</strong>
+                                </div>
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span>IRPEF + addizionali su altri redditi:</span>
+                                    <strong id="forfettarioAltriRedditiComparison">0,00 €</strong>
+                                </div>
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span>Contributi INPS:</span>
+                                    <strong id="forfettarioContributiComparison">0,00 €</strong>
+                                </div>
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span>IVA acquisti (non detraibile):</span>
+                                    <strong id="forfettarioIvaAcquistiComparison">0,00 €</strong>
+                                </div>
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span>Reddito imponibile:</span>
+                                    <strong id="forfettarioImponibileComparison">0,00 €</strong>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>Aliquota effettiva:</span>
+                                    <strong id="forfettarioAliquotaComparison">0,00%</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card text-center">
+                            <div class="card-header bg-info text-white">
+                                <h3 class="h5 mb-0">Regime Ordinario IRPEF</h3>
+                            </div>
+                            <div class="card-body">
+                                <h2 id="irpefTasseComparison" class="text-primary">0,00 €</h2>
+                                <p class="text-muted mb-2">Totale (imposte + contributi)</p>
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span>Contributi INPS:</span>
+                                    <strong id="irpefContributiComparison">0,00 €</strong>
+                                </div>
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span>IRPEF netta:</span>
+                                    <strong id="irpefImpostaComparison">0,00 €</strong>
+                                </div>
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span>Addiz. reg. + com.:</span>
+                                    <strong id="irpefAddizionaliComparison">0,00 €</strong>
+                                </div>
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span>Imposte totali:</span>
+                                    <strong id="irpefImposteTotaliComparison">0,00 €</strong>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>Aliquota effettiva:</span>
+                                    <strong id="irpefAliquotaComparison">0,00%</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h3 class="h5 mb-0">Confronto e differenza</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center mb-3">
+                            <div class="col-md-6">
+                                <h4 class="text-muted">Differenza tasse pagate</h4>
+                                <h2 id="differenzaNetto" class="text-primary">0,00 €</h2>
+                                <p id="differenzaTesto" class="lead mb-0">Il regime forfettario è più conveniente</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h4 class="text-muted">Raccomandazione</h4>
+                                <p id="raccomandazioneTesto" class="lead mb-0">Inserisci i dati nelle sezioni sopra per confrontare.</p>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Voce</th>
+                                        <th class="text-end">Forfettario</th>
+                                        <th class="text-end">Ordinario</th>
+                                        <th class="text-end">Differenza</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Reddito imponibile</td>
+                                        <td class="text-end" id="confRedditoForf">0,00 €</td>
+                                        <td class="text-end" id="confRedditoIrpef">0,00 €</td>
+                                        <td class="text-end" id="confDiffReddito">-</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Imposte</td>
+                                        <td class="text-end" id="confImposteForf">0,00 €</td>
+                                        <td class="text-end" id="confImposteIrpef">0,00 €</td>
+                                        <td class="text-end" id="confDiffImposte">-</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Contributi</td>
+                                        <td class="text-end" id="confContributiForf">0,00 €</td>
+                                        <td class="text-end" id="confContributiIrpef">0,00 €</td>
+                                        <td class="text-end" id="confDiffContributi">-</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Netto annuo</td>
+                                        <td class="text-end" id="confNettoForf">0,00 €</td>
+                                        <td class="text-end" id="confNettoIrpef">0,00 €</td>
+                                        <td class="text-end" id="confDiffNetto">-</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button class="btn btn-primary theme-switch rounded-circle" id="themeSwitchBtn" style="width: 50px; height: 50px;">
+        <i class="bi bi-moon-fill"></i>
+    </button>
+
+    <script src="../../statico/vendor/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inizializzazione tooltip
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+            
+            // Toggle dark mode
+            const darkModeSwitch = document.getElementById('darkModeSwitch');
+            const themeSwitchBtn = document.getElementById('themeSwitchBtn');
+            
+            darkModeSwitch.addEventListener('change', function() {
+                document.body.classList.toggle('dark-mode', this.checked);
+                themeSwitchBtn.innerHTML = this.checked ? '<i class="bi bi-sun-fill"></i>' : '<i class="bi bi-moon-fill"></i>';
+                localStorage.setItem('darkMode', this.checked);
+            });
+            
+            themeSwitchBtn.addEventListener('click', function() {
+                darkModeSwitch.checked = !darkModeSwitch.checked;
+                darkModeSwitch.dispatchEvent(new Event('change'));
+            });
+            
+            // Carica preferenza dark mode
+            if (localStorage.getItem('darkMode') === 'true') {
+                darkModeSwitch.checked = true;
+                darkModeSwitch.dispatchEvent(new Event('change'));
+            }
+            
+            // Reset form
+            
+            // Elementi del form forfettario
+            const coefficienteForfettario = document.getElementById('coefficienteForfettario');
+            const fatturato = document.getElementById('fatturato');
+            const aliquotaForfettaria = document.getElementById('aliquotaForfettaria');
+            const tipoContribuenteInps = document.getElementById('tipoContribuenteInps');
+            const contributiForfettarioAggiuntivi = document.getElementById('contributiForfettarioAggiuntivi');
+            const costiForfettario = document.getElementById('costiForfettario');
+            const ivaAcquistiForfettario = document.getElementById('ivaAcquistiForfettario');
+            const altriRedditiForfettario = document.getElementById('altriRedditiForfettario');
+            
+            // Elementi del form IRPEF
+            const fatturatoIrpef = document.getElementById('fatturatoIrpef');
+            const costiIrpef = document.getElementById('costiIrpef');
+            const tipoContribuenteInpsIrpef = document.getElementById('tipoContribuenteInpsIrpef');
+            const altriRedditiIrpef = document.getElementById('altriRedditiIrpef');
+            const tipoReddito = document.getElementById('tipoReddito');
+            const oneriDetraibili = document.getElementById('oneriDetraibili');
+            const oneriDeducibili = document.getElementById('oneriDeducibili');
+            const detrazioniPersonali = document.getElementById('detrazioniPersonali');
+            const tempoDeterminato = document.getElementById('tempoDeterminato');
+            const tempoDeterminatoGroup = document.getElementById('tempoDeterminatoGroup');
+            const contributiIrpefAggiuntivi = document.getElementById('contributiIrpefAggiuntivi');
+
+            const STORAGE_KEY = 'calcoloForfetario_dati';
+
+            // Salva tutti i dati del form nel localStorage
+            const salvaDati = () => {
+                const dati = {
+                    // Versione 2: «nessuno» significa solo «cassa propria o altro» (prima includeva la gestione separata)
+                    versione: 2,
+                    coefficienteForfettario: coefficienteForfettario.value,
+                    fatturato: fatturato.value,
+                    costiForfettario: costiForfettario.value,
+                    ivaAcquistiForfettario: ivaAcquistiForfettario.value,
+                    aliquotaForfettaria: aliquotaForfettaria.value,
+                    tipoContribuenteInps: tipoContribuenteInps.value,
+                    scontoContributi35: document.getElementById('scontoContributi35').checked,
+                    contributiForfettarioAggiuntivi: contributiForfettarioAggiuntivi.value,
+                    altriRedditiForfettario: altriRedditiForfettario.value,
+                    fatturatoIrpef: fatturatoIrpef.value,
+                    costiIrpef: costiIrpef.value,
+                    tipoContribuenteInpsIrpef: tipoContribuenteInpsIrpef.value,
+                    tipoReddito: tipoReddito.value,
+                    oneriDetraibili: oneriDetraibili.value,
+                    oneriDeducibili: oneriDeducibili.value,
+                    detrazioniPersonali: detrazioniPersonali.value,
+                    altriRedditiIrpef: altriRedditiIrpef.value,
+                    tempoDeterminato: tempoDeterminato ? tempoDeterminato.checked : false,
+                    contributiIrpefAggiuntivi: contributiIrpefAggiuntivi.value
+                };
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(dati));
+                } catch (e) {}
+            };
+
+            // Carica i dati salvati dal localStorage e ricalcola
+            const caricaDati = () => {
+                try {
+                    const raw = localStorage.getItem(STORAGE_KEY);
+                    if (!raw) return;
+                    const dati = JSON.parse(raw);
+                    // Salvataggio della versione precedente: «nessuno» voleva dire anche gestione separata
+                    if (!dati.versione) {
+                        if (dati.tipoContribuenteInps === 'nessuno') dati.tipoContribuenteInps = 'gestione_separata';
+                        if (dati.tipoContribuenteInpsIrpef === 'nessuno') dati.tipoContribuenteInpsIrpef = 'gestione_separata';
+                    }
+                    if (dati.coefficienteForfettario !== undefined) coefficienteForfettario.value = dati.coefficienteForfettario;
+                    if (dati.fatturato !== undefined) fatturato.value = dati.fatturato;
+                    if (dati.costiForfettario !== undefined) costiForfettario.value = dati.costiForfettario;
+                    if (dati.ivaAcquistiForfettario !== undefined) ivaAcquistiForfettario.value = dati.ivaAcquistiForfettario;
+                    if (dati.aliquotaForfettaria !== undefined) aliquotaForfettaria.value = dati.aliquotaForfettaria;
+                    if (dati.tipoContribuenteInps !== undefined) tipoContribuenteInps.value = dati.tipoContribuenteInps;
+                    if (dati.scontoContributi35 !== undefined) document.getElementById('scontoContributi35').checked = dati.scontoContributi35;
+                    if (dati.contributiForfettarioAggiuntivi !== undefined) contributiForfettarioAggiuntivi.value = dati.contributiForfettarioAggiuntivi;
+                    if (dati.altriRedditiForfettario !== undefined) altriRedditiForfettario.value = dati.altriRedditiForfettario;
+                    if (dati.fatturatoIrpef !== undefined) fatturatoIrpef.value = dati.fatturatoIrpef;
+                    if (dati.costiIrpef !== undefined) costiIrpef.value = dati.costiIrpef;
+                    if (dati.tipoContribuenteInpsIrpef !== undefined) tipoContribuenteInpsIrpef.value = dati.tipoContribuenteInpsIrpef;
+                    if (dati.tipoReddito !== undefined) tipoReddito.value = dati.tipoReddito;
+                    if (dati.oneriDetraibili !== undefined) oneriDetraibili.value = dati.oneriDetraibili;
+                    if (dati.oneriDeducibili !== undefined) oneriDeducibili.value = dati.oneriDeducibili;
+                    if (dati.detrazioniPersonali !== undefined) detrazioniPersonali.value = dati.detrazioniPersonali;
+                    if (dati.altriRedditiIrpef !== undefined) altriRedditiIrpef.value = dati.altriRedditiIrpef;
+                    if (dati.tempoDeterminato !== undefined && tempoDeterminato) tempoDeterminato.checked = dati.tempoDeterminato;
+                    if (dati.contributiIrpefAggiuntivi !== undefined) contributiIrpefAggiuntivi.value = dati.contributiIrpefAggiuntivi;
+                } catch (e) {}
+            };
+
+            // Sincronizzazione fatturato: forfettario <-> IRPEF (stesso valore per confronto equo)
+            const syncFatturatoToIrpef = () => {
+                const val = fatturato.value || '';
+                fatturatoIrpef.value = val;
+            };
+            const syncFatturatoToForfettario = () => {
+                const val = fatturatoIrpef.value || '';
+                fatturato.value = val;
+            };
+
+            // Sincronizzazione costi: forfettario <-> IRPEF (stessi costi per confronto, nel forfettario non sono deducibili)
+            const syncCostiToIrpef = () => {
+                costiIrpef.value = costiForfettario.value || '';
+            };
+            const syncCostiToForfettario = () => {
+                costiForfettario.value = costiIrpef.value || '';
+            };
+
+            // Sincronizzazione Tipo Contribuente INPS: forfettario <-> IRPEF
+            const syncTipoContribuenteToIrpef = () => {
+                tipoContribuenteInpsIrpef.value = tipoContribuenteInps.value;
+            };
+            const syncTipoContribuenteToForfettario = () => {
+                tipoContribuenteInps.value = tipoContribuenteInpsIrpef.value;
+            };
+
+            // Sincronizzazione contributi previdenziali aggiuntivi: forfettario <-> IRPEF
+            const syncContributiAggiuntiviToIrpef = () => {
+                contributiIrpefAggiuntivi.value = contributiForfettarioAggiuntivi.value || '';
+            };
+            const syncContributiAggiuntiviToForfettario = () => {
+                contributiForfettarioAggiuntivi.value = contributiIrpefAggiuntivi.value || '';
+            };
+
+            // Sincronizzazione "Altri redditi soggetti a IRPEF" tra i due regimi
+            const syncAltriRedditiToIrpef = () => {
+                altriRedditiIrpef.value = altriRedditiForfettario.value || '';
+            };
+            const syncAltriRedditiToForfettario = () => {
+                altriRedditiForfettario.value = altriRedditiIrpef.value || '';
+            };
+            
+            // Costanti INPS 2026 artigiani e commercianti (circ. INPS 14/2026)
+            const MINIMALE_ANNUO = 18808.00;
+            // Limite della 1ª fascia di reddito 2026: oltre questo importo l'aliquota aumenta di 1 punto
+            const FASCIA1 = 56224.00;
+            // Massimale annuo 2026 per gli iscritti dal 1996 (vale anche per la gestione separata)
+            const MASSIMALE = 122295.00;
+            const CONTRIBUTI_MINIMI = {
+                artigiano: 4521.36,
+                commerciante: 4611.64
+            };
+            const ALIQUOTE_INPS = {
+                artigiano: {
+                    fino_fascia1: 0.24,
+                    oltre_fascia1: 0.25
+                },
+                commerciante: {
+                    fino_fascia1: 0.2448,
+                    oltre_fascia1: 0.2548
+                }
+            };
+            // Gestione separata 2026 (professionisti senza cassa): 26,07% del reddito, nessun minimale, fino al massimale
+            const ALIQUOTA_GESTIONE_SEPARATA = 0.2607;
+
+            // Ultimi risultati dei due regimi, letti dal confronto (niente rilettura dei numeri dalla pagina)
+            let ultimoForfettario = null;
+            let ultimoOrdinario = null;
+
+            // Arrotondamento esplicito al centesimo (toPrecision elimina i residui della virgola mobile, es. 4.324,905)
+            const arrot = (x) => Math.round(Number((x * 100).toPrecision(15))) / 100;
+
+            // Formattazione numeri
+            const formatCurrency = (number) => {
+                return new Intl.NumberFormat('it-IT', {
+                    style: 'currency',
+                    currency: 'EUR',
+                    useGrouping: 'always'
+                }).format(number);
+            };
+            const formatPercentuale = (number) => {
+                return new Intl.NumberFormat('it-IT', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                    useGrouping: 'always'
+                }).format(number) + '%';
+            };
+
+            // La riduzione del 35% spetta solo ad artigiani e commercianti (L. 190/2014, c. 77-84)
+            const riduzione35Ammessa = (tipo) => tipo === 'artigiano' || tipo === 'commerciante';
+
+            // Calcolo contributi INPS sul reddito d'attività
+            const calcolaContributiInps = (redditoLordo, tipo) => {
+                if (tipo === 'gestione_separata') {
+                    const redditoContributivo = Math.min(Math.max(0, redditoLordo), MASSIMALE);
+                    return {
+                        contributiMinimi: 0,
+                        contributiEccedenti: arrot(redditoContributivo * ALIQUOTA_GESTIONE_SEPARATA)
+                    };
+                }
+
+                const aliquote = ALIQUOTE_INPS[tipo];
+                if (!aliquote) {
+                    // "nessuno": cassa professionale propria o altro, contributi da inserire tra gli aggiuntivi
+                    return {
+                        contributiMinimi: 0,
+                        contributiEccedenti: 0
+                    };
+                }
+
+                // Artigiani e commercianti: contributo fisso sul minimale + percentuale sul reddito eccedente,
+                // con aliquota +1 punto oltre la 1ª fascia e reddito contributivo fermo al massimale
+                const contributiMinimi = CONTRIBUTI_MINIMI[tipo];
+                const redditoContributivo = Math.min(redditoLordo, MASSIMALE);
+                let contributiEccedenti = 0;
+
+                if (redditoContributivo > MINIMALE_ANNUO) {
+                    const quotaFinoFascia1 = Math.min(redditoContributivo, FASCIA1) - MINIMALE_ANNUO;
+                    const quotaOltreFascia1 = Math.max(0, redditoContributivo - FASCIA1);
+
+                    contributiEccedenti =
+                        (quotaFinoFascia1 * aliquote.fino_fascia1) +
+                        (quotaOltreFascia1 * aliquote.oltre_fascia1);
+                }
+
+                return {
+                    contributiMinimi,
+                    contributiEccedenti: arrot(contributiEccedenti)
+                };
+            };
+
+            // Mostra gli avvisi sui limiti di ricavi del forfettario
+            const aggiornaAvvisiForfettario = (fatturatoValue, altriRedditi) => {
+                const contenitore = document.getElementById('avvisiForfettario');
+                if (!contenitore) return;
+                const avvisi = [];
+                if (fatturatoValue > 85000) {
+                    avvisi.push(['warning', 'Oltre 85.000 € di ricavi non si può accedere al forfettario l\'anno successivo (L. 190/2014 c.54).']);
+                }
+                if (fatturatoValue > 100000) {
+                    avvisi.push(['danger', 'Oltre 100.000 € si esce dal forfettario già nell\'anno (c.71).']);
+                }
+                if (tipoReddito.value === 'dipendente' && altriRedditi > 35000) {
+                    avvisi.push(['warning', 'Redditi di lavoro dipendente oltre 35.000 € nell\'anno precedente impediscono il forfettario (L. 190/2014 c.57 lett. d-ter).']);
+                }
+                contenitore.replaceChildren();
+                avvisi.forEach(([tipo, testo]) => {
+                    const div = document.createElement('div');
+                    div.className = 'alert alert-' + tipo + ' small mb-2';
+                    div.textContent = testo;
+                    contenitore.appendChild(div);
+                });
+            };
+
+            // Valore della casella "tempo determinato" (falso se la casella non c'è)
+            const leggiTempoDeterminato = () => (tempoDeterminato ? tempoDeterminato.checked : false);
+
+            // Calcolo regime forfettario
+            const calcolaRegimeForfettario = () => {
+                // Sincronizza solo fatturato e costi verso il blocco IRPEF
+                syncFatturatoToIrpef();
+                syncCostiToIrpef();
+                const fatturatoValue = parseFloat(fatturato.value) || 0;
+                const coefficiente = parseFloat(coefficienteForfettario.value);
+                const aliquota = parseFloat(aliquotaForfettaria.value);
+                const contributiAggiuntivi = parseFloat(contributiForfettarioAggiuntivi.value) || 0;
+                const tipo = tipoContribuenteInps.value;
+                const costiForf = parseFloat(costiForfettario.value) || 0;
+                const ivaForf = parseFloat(ivaAcquistiForfettario.value) || 0;
+                const altriRedditi = parseFloat(altriRedditiForfettario.value) || 0;
+
+                const redditoLordo = arrot(fatturatoValue * coefficiente);
+                const costiFigurativi = arrot(fatturatoValue - redditoLordo);
+                const contributiInps = calcolaContributiInps(redditoLordo, tipo);
+                const contributiInpsLordi = arrot(contributiInps.contributiMinimi + contributiInps.contributiEccedenti);
+
+                // Riduzione 35%: solo se richiesta e solo per artigiani e commercianti (controllata anche qui,
+                // non solo nella pagina, perché un vecchio salvataggio può avere la casella spuntata)
+                const casellaSconto = document.getElementById('scontoContributi35');
+                const ammessa35 = riduzione35Ammessa(tipo);
+                if (casellaSconto) casellaSconto.disabled = !ammessa35;
+                const sconto35 = ammessa35 && casellaSconto && casellaSconto.checked;
+                const contributiInpsEffettivi = sconto35 ? arrot(contributiInpsLordi * 0.65) : contributiInpsLordi;
+                const scontoApplicato = arrot(contributiInpsLordi - contributiInpsEffettivi);
+                const totaleContributi = arrot(contributiInpsEffettivi + contributiAggiuntivi);
+
+                const redditoImponibile = arrot(Math.max(0, redditoLordo - totaleContributi));
+                const imposta = arrot(redditoImponibile * aliquota);
+
+                // Altri redditi: restano soggetti a IRPEF e addizionali anche nel forfettario (il reddito
+                // forfettario no). Le detrazioni per lavoro autonomo non si applicano: valgono solo quelle
+                // per lavoro dipendente o pensione, se è il tipo di reddito scelto.
+                // L'imposta lorda è sui soli altri redditi, ma per le soglie delle detrazioni (art. 13 TUIR e
+                // L. 207/2024 c.6) conta anche il reddito forfettario al netto dei contributi (L. 190/2014 art. 1 c.75).
+                const tipoAltriRedditi = tipoReddito.value === 'autonomo' ? 'nessuna' : tipoReddito.value;
+                const imposteAltriRedditi = calcolaImposteIrpef({
+                    redditoComplessivo: altriRedditi,
+                    redditoPerDetrazioni: altriRedditi + redditoImponibile,
+                    deduzioni: parseFloat(oneriDeducibili.value) || 0,
+                    oneriDetraibiliValue: parseFloat(oneriDetraibili.value) || 0,
+                    detrazioniPersonaliValue: parseFloat(detrazioniPersonali.value) || 0,
+                    tipo: tipoAltriRedditi,
+                    tempoDet: leggiTempoDeterminato()
+                });
+                const imposteAltri = altriRedditi > 0 ? imposteAltriRedditi.imposteTotali : 0;
+
+                // Netto confrontabile con l'ordinario: fatturato − costi − IVA acquisti − contributi − imposte (+ altri redditi)
+                const nettoAnnuo = arrot(fatturatoValue - costiForf - ivaForf - totaleContributi - imposta - imposteAltri + altriRedditi);
+
+                // Aggiorna UI
+                document.getElementById('redditoLordoForfettario').textContent = formatCurrency(redditoLordo);
+                document.getElementById('costiFigurativiForfettario').textContent = formatCurrency(costiFigurativi);
+                document.getElementById('contributiInpsMinimi').textContent = formatCurrency(contributiInps.contributiMinimi);
+                document.getElementById('contributiInpsEccedenti').textContent = formatCurrency(contributiInps.contributiEccedenti);
+                const rigaSconto = document.getElementById('rigaSconto35');
+                if (rigaSconto) {
+                    rigaSconto.classList.toggle('d-none', !sconto35);
+                    document.getElementById('sconto35Valore').textContent = formatCurrency(scontoApplicato);
+                }
+                document.getElementById('contributiDedottiForfettario').textContent = formatCurrency(contributiAggiuntivi);
+                document.getElementById('totaleContributiForfettario').textContent = formatCurrency(totaleContributi);
+                document.getElementById('costiForfettarioDisplay').textContent = formatCurrency(costiForf);
+                document.getElementById('ivaAcquistiForfettarioDisplay').textContent = formatCurrency(ivaForf);
+                document.getElementById('forfettarioIvaAcquistiComparison').textContent = formatCurrency(ivaForf);
+                document.getElementById('redditoForfettario').textContent = formatCurrency(redditoImponibile);
+                document.getElementById('impostaForfettaria').textContent = formatCurrency(imposta);
+                document.getElementById('imposteAltriRedditiForfettario').textContent = formatCurrency(imposteAltri);
+                document.getElementById('nettoAnnuoForfettario').textContent = formatCurrency(nettoAnnuo);
+
+                // Aggiorna il confronto (in evidenza: imposte + contributi + IVA acquisti non detraibile)
+                const totaleTasseContributiForf = arrot(imposta + imposteAltri + totaleContributi + ivaForf);
+                document.getElementById('forfettarioTasseComparison').textContent = formatCurrency(totaleTasseContributiForf);
+                document.getElementById('forfettarioImpostaComparison').textContent = formatCurrency(imposta);
+                document.getElementById('forfettarioAltriRedditiComparison').textContent = formatCurrency(imposteAltri);
+                document.getElementById('forfettarioContributiComparison').textContent = formatCurrency(totaleContributi);
+
+                aggiornaAvvisiForfettario(fatturatoValue, altriRedditi);
+
+                ultimoForfettario = {
+                    redditoLordo,
+                    redditoImponibile,
+                    imposta,
+                    imposteAltri,
+                    totaleContributi,
+                    ivaAcquisti: ivaForf,
+                    totaleTasseContributi: totaleTasseContributiForf,
+                    nettoAnnuo
+                };
+
+                // Il confronto parte da calcolaIrpef, così usa i risultati aggiornati di entrambi i regimi
+                calcolaIrpef();
+
+                return ultimoForfettario;
+            };
+
+            // Addizionale regionale Piemonte 2026, per scaglioni:
+            // 1,62% fino a 15.000; 2,68% 15.000-28.000; 3,31% 28.000-50.000; 3,33% oltre.
+            // Costanti = imposta cumulata a fine scaglione (243; 243 + 13.000 x 2,68% = 591,40; 591,40 + 22.000 x 3,31% = 1.319,60)
+            const calcolaAddizionaleRegionale = (redditoImponibile) => {
+                if (redditoImponibile <= 15000) return redditoImponibile * 0.0162;
+                if (redditoImponibile <= 28000) return 243 + (redditoImponibile - 15000) * 0.0268;
+                if (redditoImponibile <= 50000) return 591.40 + (redditoImponibile - 28000) * 0.0331;
+                return 1319.60 + (redditoImponibile - 50000) * 0.0333;
+            };
+
+            // Addizionale comunale Asti 2026: esenti i redditi fino a 7.500 € (soglia di esenzione, non franchigia:
+            // sopra la soglia si paga su tutto il reddito). Scaglioni: 0,54% fino a 28.000; 0,78% 28.000-50.000; 0,79% oltre.
+            const calcolaAddizionaleComunale = (redditoImponibile) => {
+                if (redditoImponibile <= 7500) return 0;
+                if (redditoImponibile <= 28000) return redditoImponibile * 0.0054;
+                if (redditoImponibile <= 50000) return 151.20 + (redditoImponibile - 28000) * 0.0078;
+                return 322.80 + (redditoImponibile - 50000) * 0.0079;
+            };
+
+            // IRPEF lorda per scaglioni 2026
+            const calcolaIrpefLorda = (redditoImponibile) => {
+                if (redditoImponibile <= 28000) return redditoImponibile * 0.23;
+                if (redditoImponibile <= 50000) return 6440 + (redditoImponibile - 28000) * 0.33; // 33% dal 2026 (L. 199/2025)
+                return 13700 + (redditoImponibile - 50000) * 0.43; // 6.440 + 22.000 x 33%
+            };
+
+            // Ulteriore detrazione lavoro dipendente (L. 207/2024, c. 6), sul reddito complessivo R:
+            // 1.000 € se 20.000 < R <= 32.000; decresce fino a zero tra 32.000 e 40.000
+            const calcolaUlterioreDetrazione = (reddito) => {
+                if (reddito > 20000 && reddito <= 32000) return 1000;
+                if (reddito > 32000 && reddito <= 40000) return 1000 * (40000 - reddito) / 8000;
+                return 0;
+            };
+
+            // IRPEF netta + addizionali di un contribuente: unica funzione usata per il regime ordinario
+            // e per gli altri redditi del forfettario.
+            // redditoComplessivo = reddito soggetto a IRPEF; deduzioni = contributi e oneri deducibili.
+            // redditoPerDetrazioni = reddito per le soglie delle detrazioni (se omesso, il reddito complessivo;
+            // per gli altri redditi del forfettario comprende anche il reddito forfettario, c.75).
+            const calcolaImposteIrpef = ({ redditoComplessivo, redditoPerDetrazioni, deduzioni, oneriDetraibiliValue, detrazioniPersonaliValue, tipo, tempoDet }) => {
+                const redditoImponibile = arrot(Math.max(0, redditoComplessivo - deduzioni));
+                const irpefLorda = arrot(calcolaIrpefLorda(redditoImponibile));
+                const baseDetrazioni = redditoPerDetrazioni ?? redditoComplessivo;
+
+                const detrazioniCalcolate = calcolaDetrazioni(baseDetrazioni, oneriDetraibiliValue, tipo, tempoDet);
+                const detrazioniTipoReddito = arrot(detrazioniCalcolate.detrazioniTipoReddito);
+                const detrazioniDaOneri = arrot(detrazioniCalcolate.detrazioniOneri);
+                const ulterioreDetrazione = tipo === 'dipendente' ? arrot(calcolaUlterioreDetrazione(baseDetrazioni)) : 0;
+                const detrazioniTotali = arrot(detrazioniTipoReddito + ulterioreDetrazione + detrazioniDaOneri + detrazioniPersonaliValue);
+
+                // IRPEF netta = lorda meno tutte le detrazioni, minimo zero
+                const irpefNetta = arrot(Math.max(0, irpefLorda - detrazioniTotali));
+
+                // Addizionali solo se resta IRPEF netta (confronto in centesimi)
+                let addRegionale = 0, addComunale = 0;
+                if (Math.round((irpefLorda - detrazioniTotali) * 100) > 0) {
+                    addRegionale = arrot(calcolaAddizionaleRegionale(redditoImponibile));
+                    addComunale = arrot(calcolaAddizionaleComunale(redditoImponibile));
+                }
+
+                return {
+                    redditoImponibile,
+                    irpefLorda,
+                    detrazioniTipoReddito,
+                    ulterioreDetrazione,
+                    detrazioniTotali,
+                    irpefNetta,
+                    addRegionale,
+                    addComunale,
+                    imposteTotali: arrot(irpefNetta + addRegionale + addComunale)
+                };
+            };
+
+            // Calcolo IRPEF (regime ordinario)
+            const calcolaIrpef = () => {
+                const ricavi = parseFloat(fatturatoIrpef.value) || 0;
+                const costi = parseFloat(costiIrpef.value) || 0;
+                const altriRedditi = parseFloat(altriRedditiIrpef.value) || 0;
+                const oneriDetraibiliValue = parseFloat(oneriDetraibili.value) || 0;
+                const oneriDeducibiliValue = parseFloat(oneriDeducibili.value) || 0;
+                const detrazioniPersonaliValue = parseFloat(detrazioniPersonali.value) || 0;
+                const contributiIrpefAggiuntiviValue = parseFloat(contributiIrpefAggiuntivi.value) || 0;
+
+                // Reddito complessivo ordinario = (Ricavi - Costi) + Altri redditi, contati una sola volta
+                const redditoAttivita = Math.max(0, ricavi - costi);
+                const redditoComplessivo = redditoAttivita + altriRedditi;
+
+                // Contributi INPS (solo sul reddito dell'attività, deducibili) + contributi previdenziali aggiuntivi
+                const contributiInpsIrpef = calcolaContributiInps(redditoAttivita, tipoContribuenteInpsIrpef.value);
+                const totaleContributiInps = arrot(contributiInpsIrpef.contributiMinimi + contributiInpsIrpef.contributiEccedenti);
+                const totaleContributiDeducibili = arrot(totaleContributiInps + contributiIrpefAggiuntiviValue);
+
+                // Reddito imponibile = R_complessivo - contributi (INPS + aggiuntivi) - oneri deducibili;
+                // detrazioni calcolate sul reddito complessivo ordinario (non sull'imponibile)
+                const risultato = calcolaImposteIrpef({
+                    redditoComplessivo,
+                    deduzioni: totaleContributiDeducibili + oneriDeducibiliValue,
+                    oneriDetraibiliValue,
+                    detrazioniPersonaliValue,
+                    tipo: tipoReddito.value,
+                    tempoDet: leggiTempoDeterminato()
+                });
+                const { redditoImponibile, irpefLorda, detrazioniTipoReddito, ulterioreDetrazione, detrazioniTotali, irpefNetta, addRegionale, addComunale, imposteTotali } = risultato;
+
+                // Netto confrontabile con il forfettario: fatturato − costi − contributi − imposte (+ altri redditi)
+                const nettoAnnuo = arrot(ricavi - costi - totaleContributiDeducibili - imposteTotali + altriRedditi);
+                const aliquotaMedia = redditoComplessivo > 0 ? ((imposteTotali + totaleContributiDeducibili) / redditoComplessivo) * 100 : 0;
+
+                // Aggiorna UI
+                document.getElementById('redditoComplessivoIrpef').textContent = formatCurrency(redditoComplessivo);
+                document.getElementById('contributiInpsIrpef').textContent = formatCurrency(totaleContributiDeducibili);
+                document.getElementById('redditoImponibileIrpef').textContent = formatCurrency(redditoImponibile);
+                document.getElementById('irpefLorda').textContent = formatCurrency(irpefLorda);
+                document.getElementById('detrazioniTipoRedditoIrpef').textContent = formatCurrency(detrazioniTipoReddito);
+                document.getElementById('ulterioreDetrazioneIrpef').textContent = formatCurrency(ulterioreDetrazione);
+                document.getElementById('detrazioni').textContent = formatCurrency(detrazioniTotali);
+                document.getElementById('irpefNetta').textContent = formatCurrency(irpefNetta);
+                document.getElementById('addizionaleRegionale').textContent = formatCurrency(addRegionale);
+                document.getElementById('addizionaleComunale').textContent = formatCurrency(addComunale);
+                document.getElementById('imposteTotaliIrpef').textContent = formatCurrency(imposteTotali);
+                const totaleTasseContributiIrpef = arrot(imposteTotali + totaleContributiDeducibili);
+                document.getElementById('totaleTasseContributiIrpef').textContent = formatCurrency(totaleTasseContributiIrpef);
+                document.getElementById('aliquotaMediaIrpef').textContent = formatPercentuale(aliquotaMedia);
+                document.getElementById('nettoAnnuoIrpef').textContent = formatCurrency(nettoAnnuo);
+                document.getElementById('redditoTotaleAgevolazioni').textContent = formatCurrency(redditoComplessivo);
+
+                // Aggiorna confronto (in evidenza: totale imposte + contributi)
+                document.getElementById('irpefTasseComparison').textContent = formatCurrency(totaleTasseContributiIrpef);
+                document.getElementById('irpefContributiComparison').textContent = formatCurrency(totaleContributiDeducibili);
+                document.getElementById('irpefImpostaComparison').textContent = formatCurrency(irpefNetta);
+                document.getElementById('irpefAddizionaliComparison').textContent = formatCurrency(arrot(addRegionale + addComunale));
+                document.getElementById('irpefImposteTotaliComparison').textContent = formatCurrency(imposteTotali);
+                document.getElementById('irpefAliquotaComparison').textContent = formatPercentuale(aliquotaMedia);
+
+                ultimoOrdinario = {
+                    redditoImponibile,
+                    imposteTotali,
+                    totaleContributi: totaleContributiDeducibili,
+                    totaleTasseContributi: totaleTasseContributiIrpef,
+                    nettoAnnuo
+                };
+
+                calcolaConfronto();
+
+                return risultato;
+            };
+
+            // Detrazioni per tipo di reddito (art. 13 TUIR) e quota da oneri detraibili al 19%.
+            // tipo: 'dipendente', 'pensione', 'autonomo' oppure 'nessuna' (solo oneri)
+            const calcolaDetrazioni = (reddito, oneriDetraibiliValue, tipo, tempoDet) => {
+                const detrazioniOneri = oneriDetraibiliValue * 0.19;
+
+                if (reddito >= 50000) {
+                    return {
+                        detrazioniTipoReddito: 0,
+                        detrazioniOneri,
+                        totale: detrazioniOneri
+                    };
+                }
+
+                let detrazioniTipoReddito = 0;
+
+                if (tipo === 'dipendente') {
+                    if (reddito <= 15000) {
+                        detrazioniTipoReddito = 1955;
+                        const minimo = tempoDet ? 1380 : 690;
+                        detrazioniTipoReddito = Math.max(detrazioniTipoReddito, minimo);
+                    } else if (reddito <= 28000) {
+                        detrazioniTipoReddito = 1910 + 1190 * ((28000 - reddito) / 13000);
+                    } else {
+                        detrazioniTipoReddito = 1910 * ((50000 - reddito) / 22000);
+                    }
+                    if (reddito > 25000 && reddito <= 35000) detrazioniTipoReddito += 65;
+                } else if (tipo === 'pensione') {
+                    if (reddito <= 8500) {
+                        detrazioniTipoReddito = Math.max(1955, 713);
+                    } else if (reddito <= 28000) {
+                        detrazioniTipoReddito = 700 + 1255 * ((28000 - reddito) / 19500);
+                    } else {
+                        detrazioniTipoReddito = 700 * ((50000 - reddito) / 22000);
+                    }
+                    if (reddito > 25000 && reddito <= 29000) detrazioniTipoReddito += 50;
+                } else if (tipo === 'autonomo') {
+                    if (reddito <= 5500) {
+                        detrazioniTipoReddito = 1265;
+                    } else if (reddito <= 28000) {
+                        detrazioniTipoReddito = 500 + 765 * ((28000 - reddito) / 22500);
+                    } else {
+                        detrazioniTipoReddito = 500 * ((50000 - reddito) / 22000);
+                    }
+                    if (reddito > 11000 && reddito <= 17000) detrazioniTipoReddito += 50;
+                }
+
+                const totale = Math.max(0, detrazioniTipoReddito + detrazioniOneri);
+                return {
+                    detrazioniTipoReddito,
+                    detrazioniOneri,
+                    totale
+                };
+            };
+
+            // Calcolo confronto tra i due regimi (usa gli ultimi risultati calcolati, non il testo della pagina)
+            const calcolaConfronto = () => {
+                if (!ultimoForfettario || !ultimoOrdinario) return;
+                const forf = ultimoForfettario;
+                const ord = ultimoOrdinario;
+
+                // Tasse totali forfettario = imposte + contributi + IVA acquisti (non detraibile); ordinario = imposte + contributi
+                const tasseTotaliForf = forf.totaleTasseContributi;
+                const tasseTotaliIrpef = ord.totaleTasseContributi;
+                const diffTasseTotali = arrot(tasseTotaliForf - tasseTotaliIrpef);
+
+                // Nella card mostriamo la differenza delle tasse totali pagate
+                document.getElementById('differenzaNetto').textContent = formatCurrency(Math.abs(diffTasseTotali));
+
+                // Aliquota effettiva forfettario: (imposta + contributi) / reddito lordo
+                const caricoForf = forf.imposta + forf.totaleContributi;
+                const aliquotaForf = forf.redditoLordo > 0 ? (caricoForf / forf.redditoLordo) * 100 : 0;
+                document.getElementById('forfettarioImponibileComparison').textContent = formatCurrency(forf.redditoImponibile);
+                document.getElementById('forfettarioAliquotaComparison').textContent = formatPercentuale(aliquotaForf);
+
+                // Tabella confronto
+                const imposteForf = arrot(forf.imposta + forf.imposteAltri);
+                document.getElementById('confRedditoForf').textContent = formatCurrency(forf.redditoImponibile);
+                document.getElementById('confRedditoIrpef').textContent = formatCurrency(ord.redditoImponibile);
+                const diffReddito = arrot(forf.redditoImponibile - ord.redditoImponibile);
+                document.getElementById('confDiffReddito').textContent = (diffReddito > 0 ? '+' : '') + formatCurrency(diffReddito);
+                document.getElementById('confImposteForf').textContent = formatCurrency(imposteForf);
+                document.getElementById('confImposteIrpef').textContent = formatCurrency(ord.imposteTotali);
+                document.getElementById('confDiffImposte').textContent = formatCurrency(arrot(imposteForf - ord.imposteTotali));
+                document.getElementById('confContributiForf').textContent = formatCurrency(forf.totaleContributi);
+                document.getElementById('confContributiIrpef').textContent = formatCurrency(ord.totaleContributi);
+                document.getElementById('confDiffContributi').textContent = formatCurrency(arrot(forf.totaleContributi - ord.totaleContributi));
+                document.getElementById('confNettoForf').textContent = formatCurrency(forf.nettoAnnuo);
+                document.getElementById('confNettoIrpef').textContent = formatCurrency(ord.nettoAnnuo);
+                document.getElementById('confDiffNetto').textContent = formatCurrency(arrot(forf.nettoAnnuo - ord.nettoAnnuo));
+
+                if (tasseTotaliForf === 0 && tasseTotaliIrpef === 0) {
+                    document.getElementById('differenzaTesto').textContent = 'Inserisci i dati nelle sezioni sopra per confrontare';
+                    document.getElementById('differenzaTesto').className = 'lead text-muted';
+                    document.getElementById('raccomandazioneTesto').textContent = 'Compila Forfettario e/o Ordinario per vedere il confronto.';
+                } else if (diffTasseTotali < 0) {
+                    // tasse totali forfettario < tasse totali ordinario
+                    document.getElementById('differenzaTesto').textContent = 'Il regime forfettario è più conveniente (meno tasse totali)';
+                    document.getElementById('differenzaTesto').className = 'lead text-success';
+                    document.getElementById('raccomandazioneTesto').textContent = 'Con i dati inseriti, il forfettario fa pagare meno tasse (imposte + contributi) rispetto all\'ordinario.';
+                } else if (diffTasseTotali > 0) {
+                    document.getElementById('differenzaTesto').textContent = 'Il regime ordinario è più conveniente (meno tasse totali)';
+                    document.getElementById('differenzaTesto').className = 'lead text-info';
+                    document.getElementById('raccomandazioneTesto').textContent = 'Con i dati inseriti, l\'ordinario comporta un carico di imposte e contributi inferiore al forfettario.';
+                } else {
+                    document.getElementById('differenzaTesto').textContent = 'I due regimi fanno pagare le stesse tasse totali';
+                    document.getElementById('differenzaTesto').className = 'lead text-muted';
+                    document.getElementById('raccomandazioneTesto').textContent = 'Stesso ammontare di imposte e contributi in entrambi i regimi.';
+                }
+            };
+
+            // Eventi per il calcolo del regime forfettario
+            const scontoContributi35 = document.getElementById('scontoContributi35');
+            [coefficienteForfettario, fatturato, costiForfettario, ivaAcquistiForfettario, aliquotaForfettaria, scontoContributi35].forEach(element => {
+                element.addEventListener('input', () => { calcolaRegimeForfettario(); salvaDati(); });
+                element.addEventListener('change', () => { calcolaRegimeForfettario(); salvaDati(); });
+            });
+
+            // Visibilità tempo determinato (solo per dipendenti)
+            function aggiornaVisibilitaTempoDeterminato() {
+                if (!tempoDeterminatoGroup || !tempoDeterminato) return;
+                // d-none di Bootstrap: il gruppo ha la classe d-flex, che style.display non riuscirebbe a nascondere
+                tempoDeterminatoGroup.classList.toggle('d-none', tipoReddito.value !== 'dipendente');
+                if (tipoReddito.value !== 'dipendente') tempoDeterminato.checked = false;
+            }
+            tipoReddito.addEventListener('change', () => {
+                aggiornaVisibilitaTempoDeterminato();
+                calcolaRegimeForfettario();
+                salvaDati();
+            });
+            aggiornaVisibilitaTempoDeterminato();
+
+            // Reset form (salva lo stato azzerato nel browser)
+            document.getElementById('resetBtn').addEventListener('click', function() {
+                document.getElementById('forfettarioForm').reset();
+                document.getElementById('irpefForm').reset();
+                aggiornaVisibilitaTempoDeterminato();
+                salvaDati();
+                calcolaRegimeForfettario();
+                calcolaIrpef();
+            });
+
+            // Eventi per il calcolo IRPEF
+            fatturatoIrpef.addEventListener('input', () => {
+                syncFatturatoToForfettario();
+                calcolaRegimeForfettario();
+                calcolaIrpef();
+                salvaDati();
+            });
+            costiIrpef.addEventListener('input', () => {
+                syncCostiToForfettario();
+                calcolaRegimeForfettario();
+                calcolaIrpef();
+                salvaDati();
+            });
+            // Oneri e detrazioni valgono anche per gli altri redditi del forfettario: si ricalcolano entrambi i regimi
+            [oneriDetraibili, oneriDeducibili, detrazioniPersonali, tempoDeterminato].filter(Boolean).forEach(element => {
+                element.addEventListener('input', () => { calcolaRegimeForfettario(); salvaDati(); });
+                element.addEventListener('change', () => { calcolaRegimeForfettario(); salvaDati(); });
+            });
+
+            // Sincronizzazione bidirezionale Tipo Contribuente INPS tra i due regimi
+            tipoContribuenteInps.addEventListener('change', () => {
+                syncTipoContribuenteToIrpef();
+                calcolaRegimeForfettario();
+                calcolaIrpef();
+                salvaDati();
+            });
+            tipoContribuenteInpsIrpef.addEventListener('change', () => {
+                syncTipoContribuenteToForfettario();
+                calcolaRegimeForfettario();
+                calcolaIrpef();
+                salvaDati();
+            });
+
+            // Sincronizzazione bidirezionale contributi previdenziali aggiuntivi tra i due regimi
+            contributiForfettarioAggiuntivi.addEventListener('input', () => {
+                syncContributiAggiuntiviToIrpef();
+                calcolaRegimeForfettario();
+                calcolaIrpef();
+                salvaDati();
+            });
+
+            // Sincronizzazione bidirezionale "Altri redditi soggetti a IRPEF" tra i due regimi
+            altriRedditiForfettario.addEventListener('input', () => {
+                syncAltriRedditiToIrpef();
+                calcolaRegimeForfettario();
+                calcolaIrpef();
+                salvaDati();
+            });
+            altriRedditiIrpef.addEventListener('input', () => {
+                syncAltriRedditiToForfettario();
+                calcolaRegimeForfettario();
+                calcolaIrpef();
+                salvaDati();
+            });
+            contributiIrpefAggiuntivi.addEventListener('input', () => {
+                syncContributiAggiuntiviToForfettario();
+                calcolaRegimeForfettario();
+                calcolaIrpef();
+                salvaDati();
+            });
+            
+            // Carica dati salvati (se presenti) e calcolo iniziale
+            caricaDati();
+            aggiornaVisibilitaTempoDeterminato();
+            calcolaRegimeForfettario();
+            calcolaIrpef();
+        });
+    </script>
+
+</body>
+</html>

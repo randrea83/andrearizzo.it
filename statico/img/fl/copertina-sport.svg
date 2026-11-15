@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 480" width="1200" height="480" preserveAspectRatio="xMidYMid slice">
+  <!-- Sport e Terzo settore: le corsie di una pista e gli anelli della comunità -->
+  <rect width="1200" height="480" fill="#F9E8E9"/>
+  <g fill="none" stroke-width="6">
+    <rect x="200" y="80" width="800" height="320" rx="160" stroke="#A3343F"/>
+    <rect x="232" y="112" width="736" height="256" rx="128" stroke="#E58C92"/>
+    <rect x="264" y="144" width="672" height="192" rx="96" stroke="#A3343F" stroke-opacity=".5"/>
+  </g>
+  <rect x="296" y="176" width="608" height="128" rx="64" fill="#FFFFFF" fill-opacity=".7"/>
+  <path d="M600 80V112M600 368V400" stroke="#A3343F" stroke-width="6"/>
+  <g fill="none" stroke-width="14">
+    <circle cx="520" cy="240" r="46" stroke="#A3343F"/>
+    <circle cx="600" cy="240" r="46" stroke="#E58C92"/>
+    <circle cx="680" cy="240" r="46" stroke="#A3343F"/>
+  </g>
+  <g fill="#A3343F">
+    <circle cx="120" cy="100" r="6"/>
+    <circle cx="1080" cy="380" r="6"/>
+  </g>
+</svg>

@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcolo IRPEF | Andrea Rizzo, Commercialista ad Asti</title>
+    <style>
+        :root {
+            --primary: #3498db;
+            --secondary: #2ecc71;
+            --accent: #e74c3c;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+            --text: #333;
+            --border: #ddd;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: var(--text);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px var(--shadow);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--dark));
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .app-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        @media (min-width: 992px) {
+            .app-content {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .input-section, .results-section {
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px var(--shadow);
+        }
+
+        h2 {
+            color: var(--dark);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .checkbox-group input {
+            width: auto;
+            margin-right: 10px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .results-card {
+            background: var(--light);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed var(--border);
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-value {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .highlight {
+            background-color: rgba(46, 204, 113, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid var(--secondary);
+        }
+
+        .breakdown-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .breakdown-table th, .breakdown-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breakdown-table th {
+            background-color: var(--light);
+            font-weight: 600;
+        }
+
+        .breakdown-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 30px;
+            color: #777;
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .euro::before {
+            content: "€ ";
+        }
+
+        .percentage::after {
+            content: "%";
+        }
+
+        .positive {
+            color: var(--secondary);
+        }
+
+        .negative {
+            color: var(--accent);
+        }
+    </style>
+<link rel="canonical" href="https://www.andrearizzo.it/strumenti/calcolo-irpef/">
+<meta name="description" content="Imposta lorda e netta, addizionali e aliquota media partendo dal reddito. Calcolatore gratuito di Andrea Rizzo, Dottore Commercialista ad Asti.">
+</head>
+<body>
+<div style="font-family:system-ui,-apple-system,'Segoe UI',sans-serif;background:#17202A;color:#E8ECE8;padding:10px 16px;font-size:14px;line-height:1.4;display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center;justify-content:space-between">
+  <a href="/" style="color:#fff;font-weight:700;text-decoration:none">Andrea Rizzo, Dottore Commercialista</a>
+  <span>Risultato indicativo, non è una consulenza. <a href="/strumenti/" style="color:#fff">Altri strumenti</a> · <a href="/#contatti" style="color:#fff">Contatta lo studio</a></span>
+</div>
+    <div class="container">
+        <header>
+            <h1>Calcolatore Tasse Redditi Italia 2026</h1>
+            <p class="subtitle">Calcola IRPEF, addizionali e detrazioni in pochi secondi</p>
+            <p class="subtitle"><strong>Regione Piemonte – Comune di Asti, anno d'imposta 2026</strong></p>
+        </header>
+
+        <div class="app-content">
+            <div class="input-section">
+                <h2>Inserisci i tuoi dati</h2>
+                
+                <div class="form-group">
+                    <label for="reddito">Reddito complessivo (€)</label>
+                    <input type="number" id="reddito" min="0" step="1" placeholder="Inserisci l'importo">
+                </div>
+                
+                <div class="form-group">
+                    <label for="oneri-deducibili">Oneri deducibili (€)</label>
+                    <input type="number" id="oneri-deducibili" min="0" step="1" placeholder="0,00" value="">
+                </div>
+                
+                <div class="form-group">
+                    <label for="detrazioni-personali">Detrazioni personali (€)</label>
+                    <input type="number" id="detrazioni-personali" min="0" step="1" placeholder="0,00" value="">
+                </div>
+                
+                <div class="form-group">
+                    <label for="trattenute-fiscali">Trattenute fiscali (€)</label>
+                    <input type="number" id="trattenute-fiscali" min="0" step="1" placeholder="0,00" value="">
+                </div>
+                
+                <div class="form-group">
+                    <label for="tipo-reddito">Tipo di reddito</label>
+                    <select id="tipo-reddito">
+                        <option value="dipendente">Lavoro Dipendente</option>
+                        <option value="pensione">Pensione</option>
+                        <option value="autonomo">Lavoro Autonomo</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" id="tempo-determinato-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="tempo-determinato">
+                        <label for="tempo-determinato">Contratto a tempo determinato</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-section">
+                <h2>Risultati del calcolo</h2>
+                
+                <div class="results-card">
+                    <div class="result-item">
+                        <span>Reddito imponibile:</span>
+                        <span class="result-value euro" id="reddito-imponibile">0,00</span>
+                    </div>
+                    
+                    <div class="result-item">
+                        <span>IRPEF lorda:</span>
+                        <span class="result-value negative euro" id="irpef-lorda">0,00</span>
+                    </div>
+                    
+                    <div class="result-item">
+                        <span>Detrazioni IRPEF per tipo reddito:</span>
+                        <span class="result-value positive euro" id="detrazioni-tipo-reddito">0,00</span>
+                    </div>
+                    
+                    <div class="result-item">
+                        <span>Ulteriore detrazione lavoro dipendente (L. 207/2024):</span>
+                        <span class="result-value positive euro" id="ulteriore-detrazione">0,00</span>
+                    </div>
+
+                    <div class="result-item">
+                        <span>Detrazioni applicabili:</span>
+                        <span class="result-value positive euro" id="detrazioni">0,00</span>
+                    </div>
+                    
+                    <div class="result-item">
+                        <span>IRPEF netta:</span>
+                        <span class="result-value euro" id="irpef-netta">0,00</span>
+                    </div>
+                    
+                    <div class="result-item">
+                        <span>Trattenute fiscali:</span>
+                        <span class="result-value positive euro" id="trattenute-display">0,00</span>
+                    </div>
+                    
+                    <div class="result-item">
+                        <span>Differenza:</span>
+                        <span class="result-value euro" id="differenza">0,00</span>
+                    </div>
+                    
+                    <div class="result-item">
+                        <span>Addizionale regionale (Piemonte):</span>
+                        <span class="result-value negative euro" id="add-regionale">0,00</span>
+                    </div>
+                    
+                    <div class="result-item">
+                        <span>Addizionale comunale (Comune di Asti):</span>
+                        <span class="result-value negative euro" id="add-comunale">0,00</span>
+                    </div>
+                    
+                    <div class="result-item">
+                        <span>Imposte totali:</span>
+                        <span class="result-value negative euro" id="imposte-totali">0,00</span>
+                    </div>
+                </div>
+                
+                <div class="highlight">
+                    <div class="result-item">
+                        <span>Imposta credito/debito:</span>
+                        <span class="result-value euro" id="imposta-netta">0,00</span>
+                    </div>
+                    
+                    <div class="result-item">
+                        <span>Reddito netto annuo:</span>
+                        <span class="result-value positive euro" id="reddito-netto">0,00</span>
+                    </div>
+                    
+                    <div class="result-item">
+                        <span>Aliquota media effettiva:</span>
+                        <span class="result-value negative" id="aliquota-media">0,00%</span>
+                    </div>
+                </div>
+                
+                <h3>Breakdown IRPEF</h3>
+                <table class="breakdown-table">
+                    <thead>
+                        <tr>
+                            <th>Scaglione</th>
+                            <th>Aliquota</th>
+                            <th>Imposta</th>
+                        </tr>
+                    </thead>
+                    <tbody id="breakdown-body">
+                        <tr>
+                            <td>Fino a €28.000</td>
+                            <td>23%</td>
+                            <td class="euro">0,00</td>
+                        </tr>
+                        <tr>
+                            <td>€28.001 - €50.000</td>
+                            <td>33%</td>
+                            <td class="euro">0,00</td>
+                        </tr>
+                        <tr>
+                            <td>Oltre €50.000</td>
+                            <td>43%</td>
+                            <td class="euro">0,00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <footer>
+            <p><strong>Avvertenza.</strong> Calcolo per l'anno d'imposta 2026 con le addizionali della Regione Piemonte e del Comune di Asti.
+                Non sono compresi: il trattamento integrativo (DL 3/2020) e la somma non imponibile per i lavoratori dipendenti con reddito fino a 20.000 € (L. 207/2024, c. 4);
+                le detrazioni per familiari a carico (se spettano, inseriscile in «Detrazioni personali»);
+                la riduzione delle detrazioni per oneri per redditi oltre 75.000 € e 120.000 €.</p>
+            <p>© 2026 Calcolatore Tasse Redditi Italia | I calcoli sono forniti a titolo informativo e potrebbero non comprendere tutti gli aspetti fiscali.</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elementi DOM
+            const redditoInput = document.getElementById('reddito');
+            const oneriDeducibiliInput = document.getElementById('oneri-deducibili');
+            const detrazioniPersonaliInput = document.getElementById('detrazioni-personali');
+            const trattenuteFiscaliInput = document.getElementById('trattenute-fiscali');
+            const tipoRedditoSelect = document.getElementById('tipo-reddito');
+            const tempoDeterminatoCheckbox = document.getElementById('tempo-determinato');
+            const tempoDeterminatoGroup = document.getElementById('tempo-determinato-group');
+            
+            // Risultati
+            const redditoImponibileElement = document.getElementById('reddito-imponibile');
+            const irpefLordaElement = document.getElementById('irpef-lorda');
+            const irpefNettaElement = document.getElementById('irpef-netta');
+            const detrazioniTipoRedditoElement = document.getElementById('detrazioni-tipo-reddito');
+            const ulterioreDetrazioneElement = document.getElementById('ulteriore-detrazione');
+            const addRegionaleElement = document.getElementById('add-regionale');
+            const addComunaleElement = document.getElementById('add-comunale');
+            const imposteTotaliElement = document.getElementById('imposte-totali');
+            const detrazioniElement = document.getElementById('detrazioni');
+            const trattenuteDisplayElement = document.getElementById('trattenute-display');
+            const differenzaElement = document.getElementById('differenza');
+            const impostaNettaElement = document.getElementById('imposta-netta');
+            const redditoNettoElement = document.getElementById('reddito-netto');
+            const aliquotaMediaElement = document.getElementById('aliquota-media');
+            const breakdownBody = document.getElementById('breakdown-body');
+            
+            // Arrotondamento esplicito al centesimo (toPrecision elimina i residui della virgola mobile, es. 4.324,905)
+            const arrot = x => Math.round(Number((x * 100).toPrecision(15))) / 100;
+
+            // Configurazione iniziale: la casella "tempo determinato" si vede solo per il lavoro dipendente
+            tempoDeterminatoGroup.classList.toggle('hidden', tipoRedditoSelect.value !== 'dipendente');
+            
+            // Event listeners
+            redditoInput.addEventListener('input', calcolaTasse);
+            oneriDeducibiliInput.addEventListener('input', calcolaTasse);
+            detrazioniPersonaliInput.addEventListener('input', calcolaTasse);
+            trattenuteFiscaliInput.addEventListener('input', calcolaTasse);
+            tipoRedditoSelect.addEventListener('change', function() {
+                if (this.value === 'dipendente') {
+                    tempoDeterminatoGroup.classList.remove('hidden');
+                } else {
+                    tempoDeterminatoGroup.classList.add('hidden');
+                    tempoDeterminatoCheckbox.checked = false;
+                }
+                calcolaTasse();
+            });
+            tempoDeterminatoCheckbox.addEventListener('change', calcolaTasse);
+            
+            // Funzione principale di calcolo
+            function calcolaTasse() {
+                const redditoComplessivo = parseFloat(redditoInput.value) || 0;
+                const oneriDeducibili = parseFloat(oneriDeducibiliInput.value) || 0;
+                const detrazioniPersonali = parseFloat(detrazioniPersonaliInput.value) || 0;
+                const trattenuteFiscali = parseFloat(trattenuteFiscaliInput.value) || 0;
+                const tipoReddito = tipoRedditoSelect.value;
+                const tempoDeterminato = tempoDeterminatoCheckbox.checked;
+                
+                // Calcola reddito imponibile (reddito complessivo - oneri deducibili)
+                const redditoImponibile = Math.max(0, redditoComplessivo - oneriDeducibili);
+
+                // Calcola IRPEF sul reddito imponibile
+                const irpef = calcolaIrpef(redditoImponibile);
+
+                // Calcola detrazioni sul reddito complessivo
+                const detrazioniCalcolate = arrot(calcolaDetrazioni(redditoComplessivo, tipoReddito, tempoDeterminato));
+
+                // Ulteriore detrazione per il lavoro dipendente (L. 207/2024, c. 6)
+                const ulterioreDetrazione = tipoReddito === 'dipendente' ? arrot(calcolaUlterioreDetrazione(redditoComplessivo)) : 0;
+
+                // Aggiungi detrazioni personali
+                const detrazioniTotali = detrazioniCalcolate + ulterioreDetrazione + detrazioniPersonali;
+
+                // Le addizionali si pagano solo se resta IRPEF netta (confronto in centesimi)
+                let addRegionale = 0;
+                let addComunale = 0;
+                if (Math.round((irpef.totale - detrazioniTotali) * 100) > 0) {
+                    addRegionale = arrot(calcolaAddizionaleRegionale(redditoImponibile));
+                    addComunale = arrot(calcolaAddizionaleComunale(redditoImponibile));
+                }
+
+                // IRPEF netta = lorda meno tutte le detrazioni (tipo di reddito + ulteriore + personali), minimo 0
+                const irpefNetta = arrot(Math.max(0, irpef.totale - detrazioniTotali));
+                
+                // Calcola Imposte totali (IRPEF netta + Addizionale regionale + Addizionale comunale)
+                const imposteTotali = irpefNetta + addRegionale + addComunale;
+                
+                // Calcola Differenza (IRPEF netta - Trattenute fiscali)
+                const differenza = irpefNetta - trattenuteFiscali;
+                
+                // Calcola Imposta credito/debito (Differenza + Addizionale regionale + Addizionale comunale)
+                const impostaNetta = differenza + addRegionale + addComunale;
+                
+                // Calcola reddito netto (reddito imponibile - IRPEF netta - addizionali)
+                const redditoNetto = redditoImponibile - irpefNetta - addRegionale - addComunale;
+                const aliquotaMedia = redditoImponibile > 0 ? (imposteTotali / redditoImponibile) * 100 : 0;
+                
+                // Aggiorna UI
+                aggiornaRisultati(
+                    redditoImponibile,
+                    irpef,
+                    irpefNetta,
+                    addRegionale,
+                    addComunale,
+                    imposteTotali,
+                    detrazioniCalcolate,
+                    ulterioreDetrazione,
+                    detrazioniTotali,
+                    trattenuteFiscali,
+                    differenza,
+                    impostaNetta,
+                    redditoNetto,
+                    aliquotaMedia
+                );
+            }
+            
+            // Calcolo IRPEF per scaglioni
+            function calcolaIrpef(reddito) {
+                const scaglioni = [
+                    { limite: 28000, aliquota: 0.23, imposta: 0 },
+                    { limite: 50000, aliquota: 0.33, imposta: 0 }, // 33% dal 2026 (L. 199/2025)
+                    { limite: Infinity, aliquota: 0.43, imposta: 0 }
+                ];
+                
+                let redditoResiduo = reddito;
+                let totale = 0;
+                
+                for (let i = 0; i < scaglioni.length && redditoResiduo > 0; i++) {
+                    const scaglione = scaglioni[i];
+                    const scaglionePrecedente = i > 0 ? scaglioni[i-1].limite : 0;
+                    const importoScaglione = Math.min(redditoResiduo, scaglione.limite - scaglionePrecedente);
+                    
+                    scaglione.imposta = importoScaglione * scaglione.aliquota;
+                    totale += scaglione.imposta;
+                    redditoResiduo -= importoScaglione;
+                }
+
+                return { scaglioni, totale: arrot(totale) };
+            }
+            
+            // Addizionale regionale Piemonte 2026, per scaglioni:
+            // 1,62% fino a 15.000; 2,68% 15.000-28.000; 3,31% 28.000-50.000; 3,33% oltre.
+            // Costanti = imposta cumulata a fine scaglione (243; 243 + 13.000 x 2,68% = 591,40; 591,40 + 22.000 x 3,31% = 1.319,60)
+            function calcolaAddizionaleRegionale(reddito) {
+                if (reddito <= 15000) {
+                    return reddito * 0.0162;
+                } else if (reddito <= 28000) {
+                    return 243 + (reddito - 15000) * 0.0268;
+                } else if (reddito <= 50000) {
+                    return 591.40 + (reddito - 28000) * 0.0331;
+                } else {
+                    return 1319.60 + (reddito - 50000) * 0.0333;
+                }
+            }
+
+            // Addizionale comunale Asti 2026: esenti i redditi fino a 7.500 € (soglia di esenzione, non franchigia:
+            // sopra la soglia si paga su tutto il reddito). Scaglioni: 0,54% fino a 28.000; 0,78% 28.000-50.000; 0,79% oltre.
+            function calcolaAddizionaleComunale(reddito) {
+                if (reddito <= 7500) {
+                    return 0;
+                } else if (reddito <= 28000) {
+                    return reddito * 0.0054;
+                } else if (reddito <= 50000) {
+                    return 151.20 + (reddito - 28000) * 0.0078;
+                } else {
+                    return 322.80 + (reddito - 50000) * 0.0079;
+                }
+            }
+            
+            // Calcolo detrazioni in base al tipo di reddito
+            function calcolaDetrazioni(reddito, tipoReddito, tempoDeterminato) {
+                if (reddito >= 50000) return 0;
+                
+                let detrazione = 0;
+                
+                switch(tipoReddito) {
+                    case 'dipendente':
+                        if (reddito <= 15000) {
+                            detrazione = 1955;
+                            const minimo = tempoDeterminato ? 1380 : 690;
+                            if (detrazione < minimo) detrazione = minimo;
+                        } else if (reddito <= 28000) {
+                            detrazione = 1910 + (1190 * (28000 - reddito) / 13000);
+                        } else {
+                            detrazione = 1910 * (50000 - reddito) / 22000;
+                        }
+                        
+                        // Bonus
+                        if (reddito > 25000 && reddito <= 35000) {
+                            detrazione += 65;
+                        }
+                        break;
+                        
+                    case 'pensione':
+                        if (reddito <= 8500) {
+                            detrazione = 1955;
+                            if (detrazione < 713) detrazione = 713;
+                        } else if (reddito <= 28000) {
+                            detrazione = 700 + (1255 * (28000 - reddito) / 19500);
+                        } else {
+                            detrazione = 700 * (50000 - reddito) / 22000;
+                        }
+                        
+                        // Bonus
+                        if (reddito > 25000 && reddito <= 29000) {
+                            detrazione += 50;
+                        }
+                        break;
+                        
+                    case 'autonomo':
+                        if (reddito <= 5500) {
+                            detrazione = 1265;
+                        } else if (reddito <= 28000) {
+                            detrazione = 500 + (765 * (28000 - reddito) / 22500);
+                        } else {
+                            detrazione = 500 * (50000 - reddito) / 22000;
+                        }
+                        
+                        // Bonus
+                        if (reddito > 11000 && reddito <= 17000) {
+                            detrazione += 50;
+                        }
+                        break;
+                }
+                
+                return Math.max(0, detrazione);
+            }
+
+            // Ulteriore detrazione lavoro dipendente (L. 207/2024, c. 6), sul reddito complessivo R:
+            // 1.000 € se 20.000 < R <= 32.000; decresce fino a zero tra 32.000 e 40.000
+            function calcolaUlterioreDetrazione(reddito) {
+                if (reddito > 20000 && reddito <= 32000) return 1000;
+                if (reddito > 32000 && reddito <= 40000) return 1000 * (40000 - reddito) / 8000;
+                return 0;
+            }
+            
+            // Aggiornamento interfaccia con i risultati
+            // Numeri all'italiana: 1.234,56
+            const fmt = v => v.toLocaleString("it-IT", { minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: "always" });
+            function aggiornaRisultati(redditoImponibile, irpef, irpefNetta, addRegionale, addComunale, imposteTotali, detrazioniTipoReddito, ulterioreDetrazione, detrazioniTotali, trattenuteFiscali, differenza, impostaNetta, redditoNetto, aliquotaMedia) {
+                // Formatta e aggiorna i valori principali
+                redditoImponibileElement.textContent = fmt(redditoImponibile);
+                irpefLordaElement.textContent = fmt(irpef.totale);
+                detrazioniTipoRedditoElement.textContent = fmt(detrazioniTipoReddito);
+                ulterioreDetrazioneElement.textContent = fmt(ulterioreDetrazione);
+                
+                // Aggiorna IRPEF netta con colore in base al segno
+                irpefNettaElement.textContent = fmt(irpefNetta);
+                irpefNettaElement.className = 'result-value euro' + (irpefNetta >= 0 ? ' negative' : ' positive');
+                
+                addRegionaleElement.textContent = fmt(addRegionale);
+                addComunaleElement.textContent = fmt(addComunale);
+                imposteTotaliElement.textContent = fmt(imposteTotali);
+                detrazioniElement.textContent = fmt(detrazioniTotali);
+                trattenuteDisplayElement.textContent = fmt(trattenuteFiscali);
+                
+                // Aggiorna Differenza con colore in base al segno
+                differenzaElement.textContent = fmt(differenza);
+                differenzaElement.className = 'result-value euro' + (differenza >= 0 ? ' negative' : ' positive');
+                
+                // Aggiorna Imposta credito/debito con colore in base al segno
+                impostaNettaElement.textContent = fmt(impostaNetta);
+                impostaNettaElement.className = 'result-value euro' + (impostaNetta >= 0 ? ' negative' : ' positive');
+                
+                redditoNettoElement.textContent = fmt(redditoNetto);
+                aliquotaMediaElement.textContent = fmt(aliquotaMedia) + '%';
+                
+                // Aggiorna la tabella degli scaglioni IRPEF
+                const rows = breakdownBody.querySelectorAll('tr');
+                irpef.scaglioni.forEach((scaglione, index) => {
+                    if (rows[index]) {
+                        rows[index].querySelector('td:last-child').textContent = fmt(scaglione.imposta);
+                    }
+                });
+            }
+        });
+    </script>
+
+</body>
+</html>

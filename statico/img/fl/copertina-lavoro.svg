@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 480" width="1200" height="480" preserveAspectRatio="xMidYMid slice">
+  <!-- Lavoro e previdenza: archi concentrici (il tempo della carriera) e il calendario dei versamenti -->
+  <rect width="1200" height="480" fill="#F4E9F2"/>
+  <g fill="none" stroke-width="22">
+    <path d="M240 440A360 360 0 0 1 960 440" stroke="#C48BBA"/>
+    <path d="M320 440A280 280 0 0 1 880 440" stroke="#7B3A72"/>
+    <path d="M400 440A200 200 0 0 1 800 440" stroke="#C48BBA"/>
+    <path d="M480 440A120 120 0 0 1 720 440" stroke="#7B3A72"/>
+  </g>
+  <path d="M540 440A60 60 0 0 1 660 440Z" fill="#7B3A72"/>
+  <path d="M120 440H1080" stroke="#7B3A72" stroke-width="5" stroke-linecap="round"/>
+  <g fill="#7B3A72" fill-opacity=".18">
+    <rect x="960" y="70" width="28" height="28" rx="6"/>
+    <rect x="1000" y="70" width="28" height="28" rx="6"/>
+    <rect x="1040" y="70" width="28" height="28" rx="6"/>
+    <rect x="960" y="110" width="28" height="28" rx="6"/>
+    <rect x="1040" y="110" width="28" height="28" rx="6"/>
+    <rect x="960" y="150" width="28" height="28" rx="6"/>
+    <rect x="1000" y="150" width="28" height="28" rx="6"/>
+    <rect x="1040" y="150" width="28" height="28" rx="6"/>
+    <rect x="132" y="70" width="28" height="28" rx="6"/>
+    <rect x="172" y="70" width="28" height="28" rx="6"/>
+    <rect x="132" y="110" width="28" height="28" rx="6"/>
+  </g>
+  <rect x="1000" y="110" width="28" height="28" rx="6" fill="#7B3A72"/>
+  <rect x="172" y="110" width="28" height="28" rx="6" fill="#C48BBA"/>
+</svg>
