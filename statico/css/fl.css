@@ -1,0 +1,199 @@
+/* fl.css — thefiscallab.it, il sito degli articoli.
+   Testo in Literata (carattere pensato per leggere a lungo), interfaccia in Schibsted Grotesk.
+   L'elemento da ricordare è la testata tipografica e l'elenco con la data in colonna.
+   Ogni argomento ha un colore (scuro per testo e segni, tenue per gli sfondi) e un'illustrazione
+   in statico/img/fl: copertina-<argomento>.svg e icona-<argomento>.svg. */
+
+:root {
+  --carta: #FFFFFF;
+  --inchiostro: #142028;
+  --verde: #1D5C52;
+  --verde-scuro: #154740;
+  --accento: #1D5C52;
+  --pietra: #58636C;
+  --linea: #E0E5E2;
+  --tenue: #EEF3F1;
+
+  /* Colori degli argomenti: scuro (testo, ≥ 5,9:1 sul bianco) e tenue (sfondi) */
+  --fisco: #1D5C52;        --fisco-tenue: #E4EFEB;
+  --impresa: #34489A;      --impresa-tenue: #E9ECF7;
+  --agevolazioni: #8A5A00; --agevolazioni-tenue: #F8EEDB;
+  --lavoro: #7B3A72;       --lavoro-tenue: #F4E9F2;
+  --sport: #A3343F;        --sport-tenue: #F9E8E9;
+
+  /* Il nastro dei cinque argomenti */
+  --nastro: linear-gradient(90deg, var(--fisco) 0 20%, var(--impresa) 20% 40%, var(--agevolazioni) 40% 60%,
+    var(--lavoro) 60% 80%, var(--sport) 80% 100%);
+
+  /* Colore dell'argomento corrente (sovrascritto da data-categoria) */
+  --cat: var(--fisco);
+  --cat-tenue: var(--fisco-tenue);
+
+  --raggio: 12px;
+}
+
+/* Ogni elemento con data-categoria prende il colore del suo argomento */
+[data-categoria="Fisco"]        { --cat: var(--fisco);        --cat-tenue: var(--fisco-tenue); }
+[data-categoria^="Impresa"]     { --cat: var(--impresa);      --cat-tenue: var(--impresa-tenue); }
+[data-categoria^="Agevolazioni"]{ --cat: var(--agevolazioni); --cat-tenue: var(--agevolazioni-tenue); }
+[data-categoria^="Lavoro"]      { --cat: var(--lavoro);       --cat-tenue: var(--lavoro-tenue); }
+[data-categoria^="Sport"]       { --cat: var(--sport);        --cat-tenue: var(--sport-tenue); }
+
+body { font-family: var(--serif); }
+
+/* ---------- testata (con il nastro dei cinque argomenti in cima) */
+.testata { border-bottom: 1px solid var(--linea); }
+.testata::before { content: ""; display: block; height: 4px; background: var(--nastro); }
+.testata .contenitore { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding-top: 16px; padding-bottom: 16px; }
+.marchio { text-decoration: none; color: var(--inchiostro); font-family: var(--serif); font-weight: 700; font-size: 1.35rem; letter-spacing: -.01em; }
+.marchio span { color: var(--verde); }
+.menu ul { list-style: none; margin: 0; padding: 0; display: flex; gap: 26px; font-family: var(--sans); }
+.menu a { color: var(--inchiostro); text-decoration: none; font-weight: 500; font-size: .96rem; }
+.menu a:hover, .menu a[aria-current="page"] { color: var(--verde); }
+.menu a[aria-current="page"] { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: .35em; }
+.menu .studio { color: var(--verde); font-weight: 600; }
+
+/* ---------- testata grande della home */
+.copertina { padding: clamp(44px, 8vw, 96px) 0 clamp(28px, 5vw, 48px); border-bottom: 1px solid var(--inchiostro); }
+.copertina h1 { font-family: var(--serif); font-weight: 700; font-size: clamp(3rem, 10vw, 7.4rem); letter-spacing: -.035em; line-height: .92; margin: 0 0 .3em; }
+.copertina h1 span { color: var(--verde); }
+.copertina-riga { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 28px 56px; }
+.copertina p { font-size: clamp(1.1rem, 2vw, 1.35rem); color: var(--pietra); max-width: 32em; margin: 0; }
+.copertina .firma { font-family: var(--sans); font-size: .95rem; margin-top: 18px; color: var(--inchiostro); }
+.copertina .firma a { font-weight: 600; }
+.fregio { display: block; width: 400px; max-width: 100%; height: auto; }
+
+/* ---------- filtri per argomento: pallino del colore e numero di articoli */
+.filtri { display: flex; flex-wrap: wrap; gap: 8px; padding: 22px 0; font-family: var(--sans); }
+.filtri button { display: inline-flex; align-items: center; gap: 8px; font: 500 .92rem var(--sans); padding: 7px 14px;
+  border-radius: 999px; border: 1px solid var(--linea); background: var(--carta); color: var(--inchiostro); cursor: pointer;
+  transition: background-color .15s ease, border-color .15s ease, color .15s ease; }
+.filtri button::before { content: ""; width: 10px; height: 10px; border-radius: 3px; background: var(--cat); flex: none; }
+.filtri button[data-categoria=""] { --cat: var(--inchiostro); --cat-tenue: var(--tenue); }
+.filtri button[data-categoria=""]::before { display: none; }
+.filtri button:hover { border-color: var(--cat); background: var(--cat-tenue); }
+.filtri button[aria-pressed="true"] { background: var(--cat); border-color: var(--cat); color: #fff; }
+.filtri button[aria-pressed="true"]::before { background: #fff; }
+.filtri .conta { font-size: .8rem; color: var(--pietra); font-variant-numeric: tabular-nums; }
+.filtri button[aria-pressed="true"] .conta { color: #fff; }
+
+/* ---------- elenco articoli: data in colonna, con l'icona dell'argomento */
+.articoli { list-style: none; margin: 0 0 64px; padding: 0; }
+.articoli li { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 28px; padding: 26px 0; border-top: 1px solid var(--linea); }
+.articoli .quando { font-family: var(--sans); font-size: .88rem; color: var(--pietra); line-height: 1.4; padding-top: 4px; }
+.articoli .quando img { display: block; width: 40px; height: 40px; margin-bottom: 10px; }
+.articoli .quando b { display: block; color: var(--cat); font-weight: 600; }
+.articoli .quando .durata { display: block; }
+.articoli h2 { font-size: clamp(1.25rem, 2.4vw, 1.6rem); font-weight: 600; letter-spacing: -.01em; margin-bottom: 8px; }
+.articoli h2 a { color: var(--inchiostro); text-decoration: none; }
+.articoli h2 a:hover { color: var(--cat); text-decoration: underline; }
+.articoli p { color: var(--pietra); margin: 0; max-width: 62ch; }
+
+/* L'articolo più recente: titolo grande e copertina dell'argomento */
+.articoli li.primo { padding: 32px 0 40px; border-top: 0; }
+.articoli li.primo h2 { font-size: clamp(1.6rem, 3.6vw, 2.4rem); }
+.evidenza { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 24px 40px; align-items: center; }
+.evidenza-img { display: block; border-radius: var(--raggio); overflow: hidden; background: var(--cat-tenue); }
+.evidenza-img img { display: block; width: 100%; height: auto; aspect-ratio: 5 / 2; object-fit: cover; }
+
+/* Nascosto dal filtro: deve valere anche per la voce in evidenza */
+.articoli li[hidden] { display: none !important; }
+
+.etichetta-bozza { font-family: var(--sans); font-size: .75rem; font-weight: 700; background: #FFF4C2; color: #3D3300; padding: 2px 8px; border-radius: 4px; vertical-align: middle; }
+.vuoto { font-family: var(--sans); color: var(--pietra); padding: 26px 0; }
+
+/* ---------- riquadro finale della home: invito a contattare lo studio */
+.invito { background: var(--verde); color: #fff; margin-top: 16px; }
+.invito .contenitore { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 20px 32px;
+  padding-top: clamp(32px, 5vw, 56px); padding-bottom: clamp(32px, 5vw, 56px); }
+.invito img { display: block; width: 72px; height: 72px; border-radius: 50%; box-shadow: 0 0 0 3px rgba(255, 255, 255, .25); }
+.invito h2 { font-family: var(--serif); font-size: clamp(1.4rem, 3vw, 1.9rem); letter-spacing: -.015em; margin: 0 0 6px; }
+.invito p { font-family: var(--sans); margin: 0; max-width: 52ch; color: #fff; }
+.invito .azioni { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; font-family: var(--sans); }
+.invito .pulsante { background: #fff; color: var(--verde); }
+.invito .pulsante:hover { background: var(--fisco-tenue); }
+.invito a:not(.pulsante) { color: #fff; font-weight: 600; }
+.invito :focus-visible { outline-color: #fff; }
+
+/* ---------- articolo */
+.articolo { padding: clamp(36px, 6vw, 72px) 0 40px; }
+.articolo-testa { max-width: 68ch; margin-bottom: 28px; }
+.articolo-testa .categoria { display: inline-flex; align-items: center; gap: 8px; font-family: var(--sans); font-weight: 600; font-size: .92rem;
+  color: var(--cat); background: var(--cat-tenue); padding: 4px 12px 4px 4px; border-radius: 999px; }
+.articolo-testa .categoria img { display: block; width: 26px; height: 26px; }
+.articolo h1 { font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 700; letter-spacing: -.025em; line-height: 1.08; margin: 16px 0 18px; }
+.articolo .sommario { font-size: 1.25rem; color: var(--pietra); line-height: 1.5; }
+.meta { font-family: var(--sans); font-size: .9rem; color: var(--pietra); display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 18px; }
+.articolo-copertina { margin: 0 0 40px; max-width: 980px; border-radius: var(--raggio); overflow: hidden; background: var(--cat-tenue); }
+.articolo-copertina img { display: block; width: 100%; height: auto; aspect-ratio: 5 / 2; object-fit: cover; }
+.articolo .testo { font-size: 1.12rem; line-height: 1.75; }
+.articolo .testo h2 { font-family: var(--serif); font-weight: 700; }
+.articolo .testo blockquote { border-left-color: var(--cat); }
+.fonti { max-width: 68ch; margin-top: 40px; padding: 20px 22px; background: var(--cat-tenue); border-left: 4px solid var(--cat);
+  border-radius: 0 8px 8px 0; font-family: var(--sans); font-size: .92rem; }
+.fonti h2 { font-size: 1rem; margin-bottom: 8px; color: var(--cat); }
+.fonti ul { margin: 0; padding-left: 1.2em; }
+
+/* Riquadro dell'autore: monogramma, due righe e le azioni */
+.autore { max-width: 68ch; margin-top: 32px; padding: 24px; background: var(--tenue); border-radius: var(--raggio);
+  border-top: 4px solid var(--verde); font-family: var(--sans);
+  display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 20px; align-items: start; }
+.autore img { display: block; width: 64px; height: 64px; border-radius: 50%; grid-row: span 3; }
+.autore b { font-size: 1.05rem; }
+.autore p { margin: 6px 0 14px; color: var(--pietra); }
+.autore .azioni { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; }
+.autore .azioni a:not(.pulsante) { font-weight: 600; }
+
+.pulsante { display: inline-block; padding: 11px 20px; border-radius: 6px; font: 600 .95rem var(--sans); text-decoration: none;
+  background: var(--verde); color: #fff; transition: background-color .15s ease; }
+.pulsante:hover { background: var(--verde-scuro); }
+
+/* Altri articoli dello stesso argomento: righe con il filo colorato in testa */
+.correlati { margin-top: 48px; max-width: 980px; }
+.correlati h2 { font-family: var(--sans); font-size: 1rem; }
+.correlati ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 16px 28px; }
+.correlati li { border-top: 3px solid var(--cat); padding-top: 12px; }
+.correlati a { font-family: var(--serif); font-weight: 600; font-size: 1.05rem; line-height: 1.35; color: var(--inchiostro); text-decoration: none; }
+.correlati a:hover { color: var(--cat); text-decoration: underline; }
+.avviso-legale { max-width: 68ch; font-family: var(--sans); font-size: .85rem; color: var(--pietra); margin-top: 28px; }
+
+/* ---------- pagine */
+.pagina { padding: clamp(40px, 6vw, 80px) 0; }
+.pagina h1 { font-size: clamp(2rem, 5vw, 3rem); letter-spacing: -.02em; margin-bottom: .7em; }
+.pagina h1::after { content: ""; display: block; width: 120px; height: 6px; margin-top: 18px; border-radius: 3px; background: var(--nastro); }
+.pagina .testo { font-size: 1.1rem; line-height: 1.75; }
+.pagina h1:has(+ .fregio)::after { display: none; }
+.pagina .fregio { width: 300px; margin: 8px 0 28px; }
+.pagina .azioni { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; font-family: var(--sans); margin-top: 24px; }
+
+/* ---------- piede */
+.piede { border-top: 1px solid var(--inchiostro); padding: 32px 0; font-family: var(--sans); font-size: .9rem; color: var(--pietra); }
+.piede .contenitore { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px 32px; }
+.piede ul { list-style: none; display: flex; flex-wrap: wrap; gap: 18px; margin: 0; padding: 0; }
+.piede a { color: var(--inchiostro); }
+
+/* ---------- schermi stretti */
+@media (max-width: 860px) {
+  .copertina-riga { grid-template-columns: minmax(0, 1fr); }
+  .fregio { width: 340px; }
+  .evidenza { grid-template-columns: minmax(0, 1fr); }
+  .evidenza-img { order: -1; }
+  .invito .contenitore { grid-template-columns: auto minmax(0, 1fr); }
+  .invito .azioni { grid-column: 1 / -1; }
+}
+@media (max-width: 640px) {
+  .articoli li { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .articoli .quando { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; padding-top: 0; }
+  .articoli .quando img { width: 28px; height: 28px; margin: 0; }
+  .articoli .quando b, .articoli .quando .durata { display: inline; }
+  .articoli li.primo .quando { margin-top: 4px; }
+  .invito .contenitore { grid-template-columns: minmax(0, 1fr); }
+  .invito img { width: 56px; height: 56px; }
+  .autore { grid-template-columns: minmax(0, 1fr); padding: 20px; }
+  .autore img { width: 52px; height: 52px; grid-row: auto; margin-bottom: 8px; }
+  .articolo-copertina { margin-bottom: 28px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .filtri button, .pulsante { transition: none; }
+}
