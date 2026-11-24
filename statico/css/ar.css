@@ -219,3 +219,6 @@
   .scadenze li { grid-template-columns: 60px 1fr; gap: 12px; }
   .giorno b { font-size: 2.1rem; }
 }
+
+/* pagina normativa: titoli dei gruppi di norme */
+.normativa-gruppo { font-size: 1.25rem; margin: 36px 0 14px; }
